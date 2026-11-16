@@ -5,6 +5,9 @@ const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
   plugins: [svelte()],
+  // This repository also contains generated Android reports and Nix shell
+  // links. The bundled application has one entry; do not crawl unrelated HTML.
+  optimizeDeps: { entries: ["index.html"] },
   clearScreen: false,
   server: {
     port: 1420,
