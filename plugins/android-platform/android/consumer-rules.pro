@@ -1,0 +1,2 @@
+-keep class sk.cestou.platform.AndroidPlatformPlugin { *; }
+-keep class sk.cestou.platform.OpenArgs { *; }

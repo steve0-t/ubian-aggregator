@@ -1,0 +1,16 @@
+# Provider discovery record
+
+Reviewed 2026-11-14 with a text-extracting web reader: homepage, login, credit, tickets, parking and support. No account submission, payment, private endpoint, challenge bypass or broad crawl was performed. A limited search for official Ubian API/integration documentation did not locate a documented integration; this does not prove none exists.
+
+| Origin/category                | Evidence                                                           | Classification                                             | Policy                                                                            |
+| ------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `https://www.ubian.sk`         | Public pages and links                                             | Observed provider document origin                          | Exact-host top-level navigation allowed; optional path rules may still apply      |
+| `https://accounts.google.com`  | Public Google sign-in link on credit/ticket pages                  | Observed link destination, not observed request dependency | No automatic external redirect/session transfer                                   |
+| Other Ubian subdomains / apex  | Public search surfaced `cp.ubian.sk`; no functional flow inspected | Provisional external services                              | No wildcard provider navigation permission                                        |
+| Assets/maps                    | No raw network evidence available                                  | Unclassified dependencies                                  | HTTPS subresources permitted pending observation; third-party cookies disabled    |
+| Identity/checkout providers    | No authenticated flows available                                   | Provisional categories; hosts unknown                      | User-initiated external HTTPS confirmation only; no verified login/payment return |
+| Optional analytics/advertising | No raw network evidence available                                  | None classified                                            | No invented block rules                                                           |
+
+The raw form method/destination, redirect chain, response headers/content types, CSRF handling, cookie flags, asset dependencies and actual optional telemetry are **unknown**. Parsed page text cannot establish these. Do not add an authentication adapter, cookie bridge, domain exception or analytics rule from this inventory alone.
+
+On a network-enabled Android test setup, observe only the selected guest/login flow. Record normalized origins, functional purpose, verification date and sanitized evidence identifiers. Keep credentials, account identifiers, journeys, query strings, cookies, payment data and raw authenticated captures out of the repository. Recheck current [provider terms](https://www.ubian.sk/) and available integration guidance before implementing adapters; no permission to access undocumented private APIs has been inferred.

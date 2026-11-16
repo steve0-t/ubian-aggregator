@@ -1,0 +1,73 @@
+[
+  {
+    "url": "https://www.ubian.sk/",
+    "navigation": "provider",
+    "resource": true
+  },
+  {
+    "url": "https://WWW.UBIAN.SK:443/login",
+    "navigation": "provider",
+    "resource": true
+  },
+  {
+    "url": "https://www.ubian.sk/login?return=%2F",
+    "navigation": "provider",
+    "resource": true
+  },
+  { "url": "https://ubian.sk/", "navigation": "external", "resource": true },
+  { "url": "https://cp.ubian.sk/", "navigation": "external", "resource": true },
+  {
+    "url": "https://www.ubian.sk.attacker.test/",
+    "navigation": "external",
+    "resource": true
+  },
+  { "url": "https://notubian.sk/", "navigation": "external", "resource": true },
+  {
+    "url": "https://www.ubian.sk@attacker.test/",
+    "navigation": "deny",
+    "resource": false
+  },
+  {
+    "url": "https://attacker.test@www.ubian.sk/",
+    "navigation": "deny",
+    "resource": false
+  },
+  { "url": "https://@www.ubian.sk/", "navigation": "deny", "resource": false },
+  {
+    "url": "https://www.ubian.sk:444/",
+    "navigation": "deny",
+    "resource": false
+  },
+  { "url": "http://www.ubian.sk/", "navigation": "deny", "resource": false },
+  { "url": "javascript:alert(1)", "navigation": "deny", "resource": false },
+  {
+    "url": "file:///data/user/0/app/secret",
+    "navigation": "deny",
+    "resource": false
+  },
+  { "url": "content://app/secret", "navigation": "deny", "resource": false },
+  {
+    "url": "intent://www.ubian.sk/#Intent;scheme=https;end",
+    "navigation": "deny",
+    "resource": false
+  },
+  { "url": "data:text/html,hello", "navigation": "deny", "resource": false },
+  { "url": "//www.ubian.sk/", "navigation": "deny", "resource": false },
+  { "url": "https:///www.ubian.sk/", "navigation": "deny", "resource": false },
+  { "url": "https://www.ubian.sk./", "navigation": "deny", "resource": false },
+  { "url": " https://www.ubian.sk/", "navigation": "deny", "resource": false },
+  {
+    "url": "https://www.ubian.sk/\nlogin",
+    "navigation": "deny",
+    "resource": false
+  },
+  {
+    "url": "https://www.ubian.sk\\@attacker.test/",
+    "navigation": "deny",
+    "resource": false
+  },
+  { "url": "https://www%2eubian.sk/", "navigation": "deny", "resource": false },
+  { "url": "https://www.ubіan.sk/", "navigation": "deny", "resource": false },
+  { "url": "https://127.0.0.1:8443/", "navigation": "deny", "resource": false },
+  { "url": "https://[::1]/", "navigation": "deny", "resource": false }
+]

@@ -1,0 +1,63 @@
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --sidebar: #f7f8f8;
+  --surface: #ffffff;
+  --surface-secondary: #f7f8f8;
+  --surface-hover: #f1f3f3;
+  --text: #202326;
+  --muted: #656b70;
+  --border: #e7e9eb;
+  --border-strong: #d6dade;
+  --error: #bc2738;
+  --error-background: #fff3f3;
+  --accent: #008837;
+  --on-accent: #ffffff;
+  --accent-light-text: #008033;
+  --accent-dark-text: #65b585;
+  --accent-light-soft: #edf7f1;
+  --accent-dark-soft: #152c20;
+  --accent-light-border: #b8dec7;
+  --accent-dark-border: #105c31;
+  --accent-text: var(--accent-light-text);
+  --accent-soft: var(--accent-light-soft);
+  --accent-border: var(--accent-light-border);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #191a1c;
+  --sidebar: #171819;
+  --surface: #202123;
+  --surface-secondary: #242527;
+  --surface-hover: #2a2b2e;
+  --text: #f0f0f1;
+  --muted: #aaaeb4;
+  --border: #303235;
+  --border-strong: #484b50;
+  --error: #ff9aa8;
+  --error-background: #321f25;
+  --accent-text: var(--accent-dark-text);
+  --accent-soft: var(--accent-dark-soft);
+  --accent-border: var(--accent-dark-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] {
+    color-scheme: dark;
+    --background: #191a1c;
+    --sidebar: #171819;
+    --surface: #202123;
+    --surface-secondary: #242527;
+    --surface-hover: #2a2b2e;
+    --text: #f0f0f1;
+    --muted: #aaaeb4;
+    --border: #303235;
+    --border-strong: #484b50;
+    --error: #ff9aa8;
+    --error-background: #321f25;
+    --accent-text: var(--accent-dark-text);
+    --accent-soft: var(--accent-dark-soft);
+    --accent-border: var(--accent-dark-border);
+  }
+}

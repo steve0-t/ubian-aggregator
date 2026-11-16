@@ -1,0 +1,17 @@
+node_modules/
+dist/
+target/
+.cache/
+.direnv/
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.apk
+*.aab
+local.properties
+**/.gradle/
+**/build/
+src-tauri/gen/android/
+.DS_Store

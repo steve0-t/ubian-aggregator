@@ -1,0 +1,10 @@
+package-lock.json
+**/Cargo.lock
+node_modules/
+dist/
+target/
+.direnv/
+.cache/
+src-tauri/gen/
+INSTRUCTIONS.md
+flake.lock
