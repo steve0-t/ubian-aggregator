@@ -1,28 +1,26 @@
 export type Language = "sk" | "en";
 
 const sk = {
-  tagline: "Vaša cesta, na jednom mieste.",
   unofficial:
     "Neoficiálny klient Ubian. Bez prepojenia na prevádzkovateľa Ubian.",
   journeys: "Cesty",
+  timetables: "Cestovné poriadky",
+  signIn: "Prihlásenie",
   account: "Účet",
   settings: "Nastavenia",
-  welcome: "Kam sa vydáte?",
   journeyDescription:
     "Vyhľadajte spojenie, odchody alebo zastávku na webe Ubian.",
   openJourneys: "Otvoriť cestovné poriadky",
-  providerLabel: "Web Ubian · www.ubian.sk",
   returnHint:
-    "Tlačidlo Zavrieť vás vráti do Cestou. Späť prechádza históriou webu.",
-  guest: "Verejné cestovné poriadky môžete používať bez účtu.",
-  accountTitle: "Váš účet Ubian",
+    "Tlačidlo Zavrieť vás vráti do aplikácie. Späť prechádza históriou webu.",
+  accountTitle: "Účet Ubian",
   accountDescription:
-    "Prihlásenie prebieha na stránke Ubian. Cestou zatiaľ nevie overiť stav prihlásenia.",
+    "Prihlásenie prebieha na stránke Ubian. Aplikácia zatiaľ nevie overiť stav prihlásenia.",
   openLogin: "Otvoriť prihlásenie Ubian",
   credentials:
     "Ukladanie a opätovné použitie hesla ešte nie sú dostupné. Heslo zadávajte iba na overenej stránke Ubian.",
   session:
-    "Zapamätanie relácie je vypnuté. Cestou žiada vyčistenie webových údajov pred otvorením a po zatvorení. Úplné vymazanie ešte nie je overené. WebView môže zapisovať na disk.",
+    "Zapamätanie relácie je vypnuté. Aplikácia žiada vyčistenie webových údajov pred otvorením a po zatvorení. Úplné vymazanie ešte nie je overené. WebView môže zapisovať na disk.",
   social:
     "Sociálne prihlásenie a platby vyžadujú ďalšie overenie. Externý prehliadač nemusí zdieľať reláciu aplikácie.",
   privacy: "Súkromie",
@@ -70,33 +68,17 @@ const sk = {
   androidLabel: "Android aplikácia",
   developmentLabel: "Vývojový náhľad",
   personalize: "Prispôsobiť vzhľad",
-  introEyebrow: "Cestovanie, jednoducho",
-  journeySubtitle: "Každá dobrá cesta sa začína jednoduchým plánom.",
-  journeyPanelLabel: "Vaša ďalšia cesta",
-  journeyHeading: "Všetky spojenia.",
-  journeyHeadingAccent: "Na jednom mieste.",
   guestShort: "Bez povinného účtu",
-  accountCardDescription: "Prihlásenie a služby vášho účtu na webe Ubian.",
-  appearanceCardTitle: "Trochu viac podľa vás",
-  appearanceCardDescription:
-    "Obľúbená farba. Svetlý či tmavý vzhľad. Vaša voľba.",
   privacyDetails: "Viac o súkromí",
-  accountEyebrow: "Váš priestor",
-  accountPanelTitle: "Všetko vybavíte na Ubian",
-  accountPanelDescription:
-    "Otvorte stránku Ubian a prihláste sa do svojho účtu.",
   passwordTitle: "Prihlasovacie údaje",
   sessionTitle: "Relácia prehliadania",
   socialTitle: "Ďalšie spôsoby prihlásenia",
-  settingsDescription: "Malé detaily, vďaka ktorým je Cestou viac vaše.",
   appearance: "Vzhľad",
-  appearanceDescription: "Vytvorte si prostredie, v ktorom sa cítite dobre.",
   theme: "Motív aplikácie",
   systemTheme: "Podľa systému",
   lightTheme: "Svetlý",
   darkTheme: "Tmavý",
   accentColor: "Farba zvýraznenia",
-  accentDescription: "Jedna farba pre tlačidlá, navigáciu a malé detaily.",
   customColor: "Vlastná farba",
   hexColor: "Kód farby HEX",
   invalidColor: "Zadajte farbu vo formáte #RRGGBB, napríklad #008837.",
@@ -110,37 +92,31 @@ const sk = {
   purple: "Fialová",
   rose: "Ružová",
   orange: "Oranžová",
-  languageDescription: "Vyberte si jazyk miestneho rozhrania.",
-  previewTitle: "Vaša cesta. Vaša farba.",
-  previewDescription: "Aj každodenné cestovanie môže mať váš štýl.",
-  backToJourneys: "Späť na cesty",
   localStatus: "Dostupné v Android aplikácii",
 };
 
 type Messages = { [K in keyof typeof sk]: string };
 
 const en: Messages = {
-  tagline: "Your journey, in one place.",
   unofficial: "An unofficial Ubian client. Not affiliated with Ubian.",
   journeys: "Journeys",
+  timetables: "Timetables",
+  signIn: "Sign in",
   account: "Account",
   settings: "Settings",
-  welcome: "Where are you headed?",
   journeyDescription:
     "Find a connection, departures or a stop on the Ubian website.",
   openJourneys: "Open timetables",
-  providerLabel: "Ubian website · www.ubian.sk",
   returnHint:
-    "Close returns to Cestou. Back moves through the website history.",
-  guest: "Public timetables are available without an account.",
-  accountTitle: "Your Ubian account",
+    "Close returns to the app. Back moves through the website history.",
+  accountTitle: "Ubian account",
   accountDescription:
-    "Sign in on the Ubian website. Cestou cannot verify your login status yet.",
+    "Sign in on the Ubian website. The app cannot verify your login status yet.",
   openLogin: "Open Ubian sign-in",
   credentials:
     "Saving and reusing passwords is not available yet. Enter your password only on the verified Ubian page.",
   session:
-    "Remember session is off. Cestou requests website cleanup before opening and after closing. Complete deletion is not verified yet. WebView may write to disk.",
+    "Remember session is off. The app requests website cleanup before opening and after closing. Complete deletion is not verified yet. WebView may write to disk.",
   social:
     "Social sign-in and payments require further verification. The external browser may not share the app session.",
   privacy: "Privacy",
@@ -187,35 +163,17 @@ const en: Messages = {
   androidLabel: "Android app",
   developmentLabel: "Development preview",
   personalize: "Customize appearance",
-  introEyebrow: "Travel, made simple",
-  journeySubtitle: "Every good journey starts with a simple plan.",
-  journeyPanelLabel: "Your next journey",
-  journeyHeading: "Every connection.",
-  journeyHeadingAccent: "All in one place.",
   guestShort: "No account needed",
-  accountCardDescription:
-    "Sign in and access your account on the Ubian website.",
-  appearanceCardTitle: "A little more you",
-  appearanceCardDescription:
-    "Your favorite color. Light or dark. Make it yours.",
   privacyDetails: "More about privacy",
-  accountEyebrow: "Your space",
-  accountPanelTitle: "Take care of it on Ubian",
-  accountPanelDescription:
-    "Open the Ubian website and sign in to your account.",
   passwordTitle: "Sign-in details",
   sessionTitle: "Browsing session",
   socialTitle: "Other ways to sign in",
-  settingsDescription: "The little details that make Cestou feel like yours.",
   appearance: "Appearance",
-  appearanceDescription: "Make yourself at home.",
   theme: "App theme",
   systemTheme: "System",
   lightTheme: "Light",
   darkTheme: "Dark",
   accentColor: "Accent color",
-  accentDescription:
-    "One color for buttons, navigation, and the little details.",
   customColor: "Custom color",
   hexColor: "HEX color code",
   invalidColor: "Use the #RRGGBB format, for example #008837.",
@@ -229,10 +187,6 @@ const en: Messages = {
   purple: "Purple",
   rose: "Rose",
   orange: "Orange",
-  languageDescription: "Choose the language for the local interface.",
-  previewTitle: "Your journey. Your color.",
-  previewDescription: "Bring a little of your own style to the everyday.",
-  backToJourneys: "Back to journeys",
   localStatus: "Available in the Android app",
 };
 

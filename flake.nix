@@ -1,5 +1,5 @@
 {
-  description = "Cestou — Rust, Svelte, Tauri and Android development environment";
+  description = "ubian-aggregator — Rust, Svelte, Tauri and Android development environment";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";

@@ -28,5 +28,5 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("Cestou could not start");
+        .expect("ubian-aggregator could not start");
 }

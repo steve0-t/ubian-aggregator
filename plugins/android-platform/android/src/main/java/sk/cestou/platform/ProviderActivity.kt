@@ -220,7 +220,7 @@ class ProviderActivity : Activity() {
         if (raw.length > 8192) return
         AlertDialog.Builder(this)
             .setTitle(text("Otvoriť externý prehliadač?", "Open an external browser?"))
-            .setMessage(text("Cieľ: ${uri.host}\nRelácia a ochrana Cestou sa neprenesú.", "Destination: ${uri.host}\nThe Cestou session and protection will not transfer."))
+            .setMessage(text("Cieľ: ${uri.host}\nRelácia a ochrana ubian-aggregator sa neprenesú.", "Destination: ${uri.host}\nThe ubian-aggregator session and protection will not transfer."))
             .setNegativeButton(text("Zrušiť", "Cancel"), null)
             .setPositiveButton(text("Otvoriť", "Open")) { _, _ ->
                 try {
@@ -235,7 +235,7 @@ class ProviderActivity : Activity() {
         feedback.text = when (code) {
             "offline" -> text("Web nie je dostupný. Skontrolujte pripojenie.", "The website is unavailable. Check your connection.")
             "tls_error", "unsafe_page", "navigation_blocked" -> text("Navigácia bola zablokovaná z bezpečnostných dôvodov.", "Navigation was blocked for safety.")
-            else -> text("Tento krok zatiaľ nie je overený alebo je nedostupný. Môžete sa vrátiť do Cestou.", "This step is unverified or unavailable. You can return to Cestou.")
+            else -> text("Tento krok zatiaľ nie je overený alebo je nedostupný. Môžete sa vrátiť do ubian-aggregator.", "This step is unverified or unavailable. You can return to ubian-aggregator.")
         }
     }
 

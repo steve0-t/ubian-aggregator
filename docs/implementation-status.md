@@ -4,7 +4,7 @@
 
 ## Independent work implemented
 
-- Bundled client-rendered Svelte/TypeScript/Vite application, Slovak/English interface, original Cestou name/icon, development-state notices and narrowly typed native wrappers.
+- Bundled client-rendered Svelte/TypeScript/Vite application, Slovak/English interface, original ubian-aggregator name/icon, development-state notices and narrowly typed native wrappers.
 - Tauri 2 host source with a guarded local main view, restrictive CSP and a three-command local capability.
 - Maintained Rust/Kotlin Android plugin source with a non-exported provider Activity, a fresh platform WebView without an application bridge, native Close/Back/inset/error controls, minimal permissions and TLS/origin rules.
 - Shared versioned request policy, native WebView/service-worker hooks, Rust/Kotlin matching implementations and sanitized malicious-URL fixtures. No analytics hosts have been invented or blocked.

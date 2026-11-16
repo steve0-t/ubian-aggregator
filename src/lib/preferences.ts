@@ -10,6 +10,7 @@ export interface Preferences {
 
 type PreferenceStorage = Pick<Storage, "getItem" | "setItem">;
 
+// Keep the storage key stable so renaming the app preserves saved appearance.
 export const PREFERENCES_KEY = "cestou.preferences.v1";
 export const DEFAULT_ACCENT = "#008837";
 export const DEFAULT_PREFERENCES: Readonly<Preferences> = {

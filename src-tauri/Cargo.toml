@@ -1,12 +1,12 @@
 [package]
-name = "cestou"
+name = "ubian-aggregator"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.90"
 publish = false
 
 [lib]
-name = "cestou_lib"
+name = "ubian_aggregator_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

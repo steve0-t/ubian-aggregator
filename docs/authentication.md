@@ -13,4 +13,4 @@ Before milestone 3:
 5. Prove a fixed, origin/form/navigation-checked delivery mechanism. Never add arbitrary script evaluation or a secret-read command. Keep any plaintext in short-lived native/Rust memory and clear local form state.
 6. Test deletion and account switching with known nonproduction secrets and inspect app storage/logs. The current public-data encryption probe does not establish saved-login support.
 
-Social authentication, checkout returns and browser session transfer remain deferred. An external-browser confirmation explicitly says that the Cestou session will not transfer. No OAuth client ID, callback, token endpoint or domain ownership has been invented. The initial integration owns sessions in the provider WebView; Rust has no HTTP client or shared cookie jar.
+Social authentication, checkout returns and browser session transfer remain deferred. An external-browser confirmation explicitly says that the ubian-aggregator session will not transfer. No OAuth client ID, callback, token endpoint or domain ownership has been invented. The initial integration owns sessions in the provider WebView; Rust has no HTTP client or shared cookie jar.

@@ -1,6 +1,6 @@
 # Privacy status
 
-Cestou adds no app analytics, advertising SDK, remote crash reporter or background polling. The spike records only a fixed native error code and a provider lifecycle state in memory. It does not retain full URLs, searches or request payloads. No diagnostic export exists yet.
+ubian-aggregator adds no app analytics, advertising SDK, remote crash reporter or background polling. The spike records only a fixed native error code and a provider lifecycle state in memory. It does not retain full URLs, searches or request payloads. No diagnostic export exists yet.
 
 The native source disables third-party cookies, file/content access, mixed content, browser form saving and autofill for the provider view. It enables Safe Browsing, rejects certificate errors and intercepts WebView resource and service-worker requests. These settings still need Android regression testing.
 

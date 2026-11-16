@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, untrack } from "svelte";
+  import { name as appName } from "../package.json";
   import Icon from "./lib/Icon.svelte";
   import { messages, type Language } from "./lib/i18n";
   import {
@@ -146,10 +147,10 @@
     <button
       class="brand"
       onclick={() => selectTab("journeys")}
-      aria-label="Cestou"
+      aria-label={appName}
     >
       <span class="brand-mark"><Icon name="route" size={25} /></span>
-      <span class="brand-name">Cestou<span>{t.tagline}</span></span>
+      <span class="brand-name">{appName}</span>
     </button>
 
     <div class="sidebar-navigation">
@@ -171,18 +172,6 @@
     </div>
 
     <div class="sidebar-bottom">
-      <div class="sidebar-personalize">
-        <span class="small-icon"><Icon name="palette" size={19} /></span>
-        <p>{t.appearanceCardTitle}</p>
-        <div class="mini-swatches" aria-hidden="true">
-          {#each ACCENT_PRESETS.slice(0, 4) as preset}
-            <span style:--swatch={preset.color}></span>
-          {/each}
-        </div>
-        <button class="text-button" onclick={() => selectTab("settings")}>
-          {t.personalize}<Icon name="arrow" size={16} />
-        </button>
-      </div>
       <button
         class="nav-item help-link"
         disabled={!canOpen}
@@ -209,13 +198,14 @@
       <button
         class="mobile-brand"
         onclick={() => selectTab("journeys")}
-        aria-label="Cestou"
+        aria-label={appName}
       >
         <span class="brand-mark"><Icon name="route" size={22} /></span>
-        <span>Cestou</span>
+        <span>{appName}</span>
       </button>
       <div class="breadcrumb">
-        <span>Cestou</span><Icon name="chevron" size={13} /><span>{t[tab]}</span
+        <span>{appName}</span><Icon name="chevron" size={13} /><span
+          >{t[tab]}</span
         >
       </div>
       <div class="header-actions">
@@ -248,21 +238,12 @@
 
         {#if tab === "journeys"}
           <div class="page-intro">
-            <p class="eyebrow">
-              <span class="eyebrow-line"></span>{t.introEyebrow}
-            </p>
-            <h1>{t.welcome}</h1>
-            <p class="page-description">{t.journeySubtitle}</p>
+            <h1>{t.journeys}</h1>
           </div>
 
           <section class="journey-panel panel" aria-labelledby="journey-title">
             <div class="journey-copy">
-              <span class="section-kicker"
-                ><Icon name="route" size={17} />{t.journeyPanelLabel}</span
-              >
-              <h2 id="journey-title">
-                {t.journeyHeading}<br /><span>{t.journeyHeadingAccent}</span>
-              </h2>
+              <h2 id="journey-title">{t.timetables}</h2>
               <p>{t.journeyDescription}</p>
               <button
                 class="primary"
@@ -400,9 +381,7 @@
             >
               <span class="card-icon"><Icon name="user" size={22} /></span>
               <span class="quick-card-copy"
-                ><strong>{t.accountTitle}</strong><span
-                  >{t.accountCardDescription}</span
-                ></span
+                ><strong>{t.accountTitle}</strong></span
               >
               <Icon name="chevron" size={18} />
             </button>
@@ -414,9 +393,7 @@
                 ><Icon name="palette" size={22} /></span
               >
               <span class="quick-card-copy"
-                ><strong>{t.appearanceCardTitle}</strong><span
-                  >{t.appearanceCardDescription}</span
-                ></span
+                ><strong>{t.appearance}</strong></span
               >
               <Icon name="chevron" size={18} />
             </button>
@@ -441,9 +418,6 @@
           </p>
         {:else if tab === "account"}
           <div class="page-intro">
-            <p class="eyebrow">
-              <span class="eyebrow-line"></span>{t.accountEyebrow}
-            </p>
             <h1>{t.accountTitle}</h1>
             <p class="page-description">{t.accountDescription}</p>
           </div>
@@ -452,8 +426,7 @@
             <span class="provider-badge"
               ><span class="status-dot"></span>www.ubian.sk/login</span
             >
-            <h2 id="account-title">{t.accountPanelTitle}</h2>
-            <p>{t.accountPanelDescription}</p>
+            <h2 id="account-title">{t.signIn}</h2>
             <button
               class="primary"
               disabled={!canOpen}
@@ -484,14 +457,8 @@
             {/each}
           </div>
         {:else}
-          <div class="page-intro settings-intro">
-            <p class="eyebrow">
-              <span class="eyebrow-line"></span>Cestou, {language === "sk"
-                ? "podľa vás"
-                : "your way"}
-            </p>
+          <div class="page-intro">
             <h1>{t.settings}</h1>
-            <p class="page-description">{t.settingsDescription}</p>
           </div>
 
           <section
@@ -504,7 +471,6 @@
               >
               <div>
                 <h2 id="appearance-title">{t.appearance}</h2>
-                <p>{t.appearanceDescription}</p>
               </div>
             </div>
 
@@ -550,7 +516,6 @@
 
             <fieldset class="accent-fieldset">
               <legend>{t.accentColor}</legend>
-              <p class="field-description">{t.accentDescription}</p>
               <div class="accent-controls">
                 <div class="accent-presets">
                   {#each ACCENT_PRESETS as preset}
@@ -615,16 +580,6 @@
                 </p>{/if}
             </fieldset>
 
-            <div class="appearance-preview">
-              <span class="preview-route"><Icon name="route" size={27} /></span>
-              <div>
-                <h3>{t.previewTitle}</h3>
-                <p>{t.previewDescription}</p>
-              </div>
-              <button class="primary" onclick={() => selectTab("journeys")}
-                >{t.backToJourneys}<Icon name="arrow" size={17} /></button
-              >
-            </div>
             <div class="settings-actions">
               <p
                 class="save-hint"
@@ -650,7 +605,6 @@
               <span class="card-icon"><Icon name="globe" size={22} /></span>
               <div>
                 <h2 id="language-title">{t.language}</h2>
-                <p>{t.languageDescription}</p>
               </div>
             </div>
             <label class="sr-only" for="language">{t.language}</label>
@@ -735,7 +689,8 @@
         {/if}
 
         <footer class="content-footer">
-          <span class="footer-brand"><Icon name="route" size={16} />Cestou</span
+          <span class="footer-brand"
+            ><Icon name="route" size={16} />{appName}</span
           >
           <p>{t.unofficial}</p>
           <span class="footer-version">v0.1.0</span>

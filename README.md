@@ -1,6 +1,6 @@
-# Cestou
+# ubian-aggregator
 
-An unofficial Android client for [Ubian](https://www.ubian.sk/), using Rust, Tauri 2, Svelte and TypeScript. Cestou is not affiliated with Ubian.
+An unofficial Android client for [Ubian](https://www.ubian.sk/), using Rust, Tauri 2, Svelte and TypeScript. ubian-aggregator is not affiliated with Ubian.
 
 **Current state: milestone 1 integration spike, not a usable Android release.** The local frontend builds and the shared URL policy has host tests. Android rendering, actual Keystore behavior, authentication and privacy behavior still require a full Android build and device validation. No APK has been produced.
 
