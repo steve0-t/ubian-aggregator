@@ -29,9 +29,18 @@ report(
 version("Rust", "rustc", ["--version"]);
 version("Cargo", "cargo", ["--version"]);
 version("Tauri CLI", "cargo", ["tauri", "--version"]);
-version("JDK", "java", ["-version"]);
+version(
+  "JDK",
+  process.env.JAVA_HOME ? join(process.env.JAVA_HOME, "bin/java") : "java",
+  ["-version"],
+);
 const targets = version("Rustup", "rustup", ["target", "list", "--installed"]);
-for (const target of ["aarch64-linux-android", "x86_64-linux-android"]) {
+for (const target of [
+  "aarch64-linux-android",
+  "armv7-linux-androideabi",
+  "i686-linux-android",
+  "x86_64-linux-android",
+]) {
   report(
     target,
     targets.split("\n").includes(target),
@@ -39,25 +48,29 @@ for (const target of ["aarch64-linux-android", "x86_64-linux-android"]) {
   );
 }
 
-const sdk = process.env.ANDROID_HOME;
-const ndk = process.env.NDK_HOME;
-report(
-  "Android SDK",
-  !!sdk &&
-    ["android-37", "android-37.0"].some((platform) =>
-      existsSync(join(sdk, "platforms", platform, "android.jar")),
-    ),
-  "requires ANDROID_HOME and platform android-37",
-);
-report(
-  "Build tools",
-  !!sdk && existsSync(join(sdk, "build-tools/37.0.0")),
-  "requires build-tools 37.0.0",
-);
+const sdk = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
+const ndk = process.env.NDK_HOME || (sdk && join(sdk, "ndk/29.0.14206865"));
+for (const api of ["36", "37"]) {
+  report(
+    `Android SDK ${api}`,
+    !!sdk &&
+      [`android-${api}`, `android-${api}.0`].some((platform) =>
+        existsSync(join(sdk, "platforms", platform, "android.jar")),
+      ),
+    `requires platform android-${api} in ANDROID_HOME (or ANDROID_SDK_ROOT); SDK: ${sdk || "unset"}`,
+  );
+}
+for (const tools of ["36.0.0", "37.0.0"]) {
+  report(
+    `Build tools ${tools}`,
+    !!sdk && existsSync(join(sdk, "build-tools", tools)),
+    `requires build-tools ${tools}`,
+  );
+}
 report(
   "Android NDK",
   !!ndk && existsSync(join(ndk, "source.properties")),
-  "requires NDK_HOME",
+  `requires NDK 29.0.14206865; NDK: ${ndk || "unset"}`,
 );
 if (ndk && existsSync(join(ndk, "source.properties"))) {
   const properties = readFileSync(join(ndk, "source.properties"), "utf8");
@@ -70,7 +83,7 @@ if (ndk && existsSync(join(ndk, "source.properties"))) {
 report(
   "Android host",
   existsSync("src-tauri/gen/android/app/build.gradle.kts"),
-  "run Android initialization once, then npm run android:configure",
+  "run npm run android:init once",
 );
 report(
   "Rust app lockfile",

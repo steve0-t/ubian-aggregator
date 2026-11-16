@@ -18,6 +18,8 @@
     "test:core": "cargo test --manifest-path crates/journey-core/Cargo.toml --locked",
     "doctor": "node scripts/doctor.mjs",
     "android:configure": "node scripts/configure-android.mjs",
+    "android:init": "cargo tauri android init --ci && npm run android:configure",
+    "android:build": "npm run android:configure && cargo tauri android build --apk --ci",
     "tauri": "cargo tauri"
   },
   "devDependencies": {
