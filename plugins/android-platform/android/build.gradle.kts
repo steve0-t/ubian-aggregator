@@ -17,8 +17,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    sourceSets["main"].assets.srcDir("../../../policy")
-    sourceSets["androidTest"].assets.srcDir("../../../tests/fixtures")
+    // The DSL block avoids the legacy sourceSets getter's incompatible
+    // AndroidLibrarySourceSet cast on AGP 9.3.
+    sourceSets {
+        getByName("main") { assets.srcDir("../../../policy") }
+        getByName("androidTest") { assets.srcDir("../../../tests/fixtures") }
+    }
 }
 
 kotlin {
