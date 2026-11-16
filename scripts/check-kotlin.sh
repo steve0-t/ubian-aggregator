@@ -19,5 +19,16 @@ task_java="${JAVA_HOME:+$JAVA_HOME/bin/}java"
   plugins/android-platform/android/src/main/java/sk/cestou/platform/ProviderSession.kt \
   plugins/android-platform/android/src/main/java/sk/cestou/platform/ProviderActivity.kt \
   plugins/android-platform/android/src/main/java/sk/cestou/platform/ProbeVault.kt \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/AppLanguage.kt \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/VaultRecord.kt \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/AccountVault.kt \
   "$task_tmp/PolicyHarness.kt"
 "$task_java" -cp "$task_tmp/platform.jar:$KOTLIN_STDLIB:$ANDROID_JAR" sk.cestou.platform.PolicyHarnessKt
+"$task_java" -cp "$KOTLIN_COMPILER_CLASSPATH" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
+  -no-stdlib -no-reflect -jvm-target 1.8 \
+  -classpath "$KOTLIN_COMPILER_CLASSPATH" \
+  -d "$task_tmp/vault-tests.jar" \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/AppLanguage.kt \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/VaultRecord.kt \
+  tests/kotlin/VaultHarness.kt
+"$task_java" -cp "$task_tmp/vault-tests.jar:$KOTLIN_STDLIB" sk.cestou.platform.VaultHarnessKt

@@ -1,12 +1,15 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "local-main",
-  "description": "Only bundled main assets may use the three Android integration spike commands.",
+  "description": "Only bundled main assets may use narrowly typed platform commands. No provider or secret access.",
   "local": true,
   "windows": ["main"],
   "permissions": [
     "android-platform:allow-status",
     "android-platform:allow-open-provider",
-    "android-platform:allow-keystore-probe"
+    "android-platform:allow-keystore-probe",
+    "android-platform:allow-lookup-stops",
+    "android-platform:allow-vault-status",
+    "android-platform:allow-set-appearance"
   ]
 }

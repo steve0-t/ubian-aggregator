@@ -2,6 +2,7 @@
   import { onMount, untrack } from "svelte";
   import { name as appName } from "../package.json";
   import Icon from "./lib/Icon.svelte";
+  import Timetables from "./lib/Timetables.svelte";
   import { messages, type Language } from "./lib/i18n";
   import {
     ACCENT_PRESETS,
@@ -17,6 +18,7 @@
     openProvider,
     platformStatus,
     probeKeystore,
+    setSystemAppearance,
     type Destination,
     type PlatformStatus,
     type ProbeReport,
@@ -35,6 +37,7 @@
     { id: "system", label: "systemTheme", icon: "monitor" },
     { id: "light", label: "lightTheme", icon: "sun" },
     { id: "dark", label: "darkTheme", icon: "moon" },
+    { id: "black", label: "blackTheme", icon: "moon" },
   ] as const;
 
   let language = $state<Language>(startingPreferences.language);
@@ -42,6 +45,7 @@
   let accent = $state(startingPreferences.accent);
   let accentInput = $state(startingPreferences.accent.toUpperCase());
   let preferencesSaved = $state(true);
+  let systemAppearanceFailed = $state(false);
   let tab = $state<Tab>("journeys");
   let busy = $state(false);
   let notice = $state<"opened" | "genericError" | "nativeUnavailable" | null>(
@@ -98,6 +102,21 @@
   }
 
   onMount(() => {
+    const deviceTheme = matchMedia("(prefers-color-scheme: dark)");
+    const syncBars = () => {
+      const resolved = theme === "system" ? (deviceTheme.matches ? "dark" : "light") : theme;
+      const color = resolved === "black" ? "#000000" : resolved === "dark" ? "#191a1c" : "#ffffff";
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
+      if (native) void setSystemAppearance(resolved).then(
+        () => { systemAppearanceFailed = false; },
+        () => { systemAppearanceFailed = true; },
+      );
+    };
+    // A root attribute observer also covers explicit settings changes.
+    const appearanceObserver = new MutationObserver(syncBars);
+    appearanceObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    deviceTheme.addEventListener("change", syncBars);
+    syncBars();
     void refresh();
     const onReturn = () => {
       if (!document.hidden) void refresh();
@@ -105,6 +124,8 @@
     document.addEventListener("visibilitychange", onReturn);
     window.addEventListener("focus", onReturn);
     return () => {
+      appearanceObserver.disconnect();
+      deviceTheme.removeEventListener("change", syncBars);
       document.removeEventListener("visibilitychange", onReturn);
       window.removeEventListener("focus", onReturn);
     };
@@ -212,12 +233,7 @@
         <span class="build-badge"
           ><span class="status-dot"></span>{t.developmentLabel}</span
         >
-        <button
-          class="icon-button"
-          aria-label={t.personalize}
-          title={t.personalize}
-          onclick={() => selectTab("settings")}><Icon name="palette" /></button
-        >
+
       </div>
     </header>
 
@@ -241,131 +257,7 @@
             <h1>{t.journeys}</h1>
           </div>
 
-          <section class="journey-panel panel" aria-labelledby="journey-title">
-            <div class="journey-copy">
-              <h2 id="journey-title">{t.timetables}</h2>
-              <p>{t.journeyDescription}</p>
-              <button
-                class="primary"
-                disabled={!canOpen}
-                onclick={() => open("journeys")}
-              >
-                {busy ? t.busy : t.openJourneys}<Icon name="arrow" size={18} />
-              </button>
-              <span class="guest-hint"
-                ><Icon name="user" size={15} />{t.guestShort}</span
-              >
-            </div>
-            <div class="route-art" aria-hidden="true">
-              <svg viewBox="0 0 300 270" fill="none">
-                <defs>
-                  <pattern
-                    id="route-grid"
-                    x="8"
-                    y="8"
-                    width="22"
-                    height="22"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <circle
-                      cx="1"
-                      cy="1"
-                      r="1"
-                      fill="currentColor"
-                      opacity=".16"
-                    />
-                  </pattern>
-                </defs>
-                <rect
-                  x="4"
-                  y="4"
-                  width="292"
-                  height="262"
-                  rx="24"
-                  fill="url(#route-grid)"
-                />
-                <circle
-                  cx="151"
-                  cy="137"
-                  r="99"
-                  stroke="currentColor"
-                  opacity=".08"
-                />
-                <circle
-                  cx="151"
-                  cy="137"
-                  r="72"
-                  stroke="currentColor"
-                  opacity=".08"
-                />
-                <path
-                  d="M80 75h99c48 0 48 61 0 61h-47c-51 0-51 61 0 61h87"
-                  stroke="var(--accent-border)"
-                  stroke-width="16"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M80 75h99c48 0 48 61 0 61h-47c-51 0-51 61 0 61h87"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-dasharray="4 6"
-                />
-                <rect
-                  x="48"
-                  y="43"
-                  width="64"
-                  height="64"
-                  rx="19"
-                  fill="var(--surface)"
-                  stroke="var(--accent-border)"
-                />
-                <circle
-                  cx="80"
-                  cy="75"
-                  r="14"
-                  fill="var(--accent-soft)"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                />
-                <circle cx="80" cy="75" r="5" fill="currentColor" />
-                <rect
-                  x="187"
-                  y="165"
-                  width="64"
-                  height="64"
-                  rx="19"
-                  fill="var(--accent)"
-                />
-                <path
-                  d="M230 193c0 8-11 17-11 17s-11-9-11-17a11 11 0 1 1 22 0Z"
-                  stroke="var(--on-accent)"
-                  stroke-width="1.7"
-                />
-                <circle
-                  cx="219"
-                  cy="193"
-                  r="3.5"
-                  stroke="var(--on-accent)"
-                  stroke-width="1.7"
-                />
-                <circle
-                  cx="152"
-                  cy="136"
-                  r="5"
-                  fill="var(--surface)"
-                  stroke="currentColor"
-                  stroke-width="2"
-                />
-                <path
-                  d="m253 64 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7ZM51 177v10m-5-5h10"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  opacity=".55"
-                />
-              </svg>
-            </div>
-          </section>
+          <Timetables {language} />
 
           {#if !native}
             <div class="preview-notice">
@@ -385,18 +277,7 @@
               >
               <Icon name="chevron" size={18} />
             </button>
-            <button
-              class="quick-card panel"
-              onclick={() => selectTab("settings")}
-            >
-              <span class="card-icon accent-icon"
-                ><Icon name="palette" size={22} /></span
-              >
-              <span class="quick-card-copy"
-                ><strong>{t.appearance}</strong></span
-              >
-              <Icon name="chevron" size={18} />
-            </button>
+
           </div>
 
           <section class="privacy-summary" aria-labelledby="privacy-title">
@@ -413,9 +294,7 @@
               </details>
             </div>
           </section>
-          <p class="return-hint">
-            <Icon name="info" size={15} />{t.returnHint}
-          </p>
+
         {:else if tab === "account"}
           <div class="page-intro">
             <h1>{t.accountTitle}</h1>
@@ -442,6 +321,15 @@
             </div>
           {/if}
           <div class="information-panel panel">
+            <div class="information-row">
+              <div>
+                <h2>{t.storagePreparation}</h2>
+                <label class="unavailable-option"><input type="checkbox" disabled />{t.rememberSession} <span>{t.unavailableOff}</span></label>
+                <label class="unavailable-option"><input type="checkbox" disabled />{t.saveCredentials} <span>{t.unavailableOff}</span></label>
+                <p>{t.providerLanguage}</p>
+                <p>{t.returnHint}</p>
+              </div>
+            </div>
             {#each [{ icon: "key", title: t.passwordTitle, description: t.credentials }, { icon: "clock", title: t.sessionTitle, description: t.session }, { icon: "external", title: t.socialTitle, description: t.social }] as item}
               <div class="information-row">
                 <span class="small-icon"
@@ -474,6 +362,7 @@
               </div>
             </div>
 
+            {#if systemAppearanceFailed}<p class="field-error" role="status">{t.systemAppearanceError}</p>{/if}
             <fieldset class="theme-fieldset">
               <legend>{t.theme}</legend>
               <div class="theme-options">
@@ -493,6 +382,7 @@
                       class:thumbnail-light={option.id === "light"}
                       class:thumbnail-dark={option.id === "dark"}
                       class:thumbnail-system={option.id === "system"}
+                      class:thumbnail-black={option.id === "black"}
                       aria-hidden="true"
                     >
                       <span class="thumbnail-sidebar"
@@ -611,7 +501,7 @@
             <select id="language" bind:value={language}
               ><option value="sk">Slovenčina</option><option value="en"
                 >English</option
-              ></select
+              ><option value="uk">Українська</option></select
             >
           </section>
 

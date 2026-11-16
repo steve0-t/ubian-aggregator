@@ -1,0 +1,42 @@
+{
+  "status": "ok",
+  "inputPhrase": "Bratislava",
+  "results": [
+    {
+      "name": "Bratislava, Pod stanicou",
+      "stopCity": "Bratislava",
+      "slug": "800000294-bratislava-pod-stanicou",
+      "stopName": "Pod stanicou",
+      "desc": "MHD zastávka",
+      "type": "stop",
+      "transportType": "urban",
+      "icon": "stop_urban",
+      "id": 800000294,
+      "region": "Bratislava"
+    },
+    {
+      "name": "Bratislava hlavná stanica, žel.st.",
+      "stopCity": "Bratislava hlavná stanica",
+      "slug": "950001485-bratislava-hlavna-stanica-zel-st",
+      "stopName": "žel.st.",
+      "desc": "Vlak. zastávka",
+      "type": "stop",
+      "transportType": "train",
+      "icon": "stop_train",
+      "id": 950001485,
+      "region": "Bratislava"
+    },
+    {
+      "name": "Bratislava, Račianske mýto",
+      "stopCity": "Bratislava",
+      "slug": "10247-bratislava-racianske-myto",
+      "stopName": "Račianske mýto",
+      "desc": "MHD a autobus. zastávka",
+      "type": "stop",
+      "transportType": "bus,urban",
+      "icon": "stop_mixed",
+      "id": 10247,
+      "region": "Bratislava"
+    }
+  ]
+}

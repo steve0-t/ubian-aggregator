@@ -1,6 +1,9 @@
 //! Policy shared by the coordinator and the Android request-filter implementation.
 //! No HTTP adapter, credentials, or provider session is owned by this crate.
 
+pub mod timetable;
+pub mod vault;
+
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -9,7 +12,6 @@ pub const POLICY_JSON: &str = include_str!("../../../policy/network-policy.json"
 #[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Destination {
-    Journeys,
     Login,
     Support,
 }
@@ -17,7 +19,6 @@ pub enum Destination {
 impl Destination {
     pub fn url(self) -> &'static str {
         match self {
-            Self::Journeys => "https://www.ubian.sk/",
             Self::Login => "https://www.ubian.sk/login",
             Self::Support => "https://www.ubian.sk/pomoc-a-podpora",
         }
@@ -245,11 +246,7 @@ mod tests {
     fn all_entry_points_use_the_provider_policy() {
         let policy = NetworkPolicy::parse(POLICY_JSON).unwrap();
         assert_eq!(policy.optional_rule_count(), 0);
-        for destination in [
-            Destination::Journeys,
-            Destination::Login,
-            Destination::Support,
-        ] {
+        for destination in [Destination::Login, Destination::Support] {
             assert_eq!(policy.navigation(destination.url()), Navigation::Provider);
         }
     }

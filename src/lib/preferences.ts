@@ -1,6 +1,6 @@
 import type { Language } from "./i18n";
 
-export type Theme = "system" | "light" | "dark";
+export type Theme = "system" | "light" | "dark" | "black";
 
 export interface Preferences {
   accent: string;
@@ -46,10 +46,10 @@ export function readPreferences(storage?: PreferenceStorage): Preferences {
         ? value.accent.toLowerCase()
         : DEFAULT_ACCENT,
       theme:
-        value.theme === "light" || value.theme === "dark"
+        value.theme === "light" || value.theme === "dark" || value.theme === "black"
           ? value.theme
           : "system",
-      language: value.language === "en" ? "en" : "sk",
+      language: value.language === "en" || value.language === "uk" ? value.language : "sk",
     };
   } catch {
     return { ...DEFAULT_PREFERENCES };
@@ -118,6 +118,7 @@ export function accentTokens(value: string): Record<string, string> {
   const color = isAccent(value) ? value.toLowerCase() : DEFAULT_ACCENT;
   const lightSoft = mix(color, "#ffffff", 0.93);
   const darkSoft = mix(color, "#191a1c", 0.84);
+  const blackSoft = mix(color, "#000000", 0.86);
   return {
     "--accent": color,
     "--on-accent":
@@ -125,11 +126,14 @@ export function accentTokens(value: string): Record<string, string> {
         ? "#ffffff"
         : "#000000",
     "--accent-light-text": readableAccent(color, ["#f7f8f8", lightSoft]),
-    "--accent-dark-text": readableAccent(color, ["#202123", darkSoft]),
+    "--accent-dark-text": readableAccent(color, ["#2a2b2e", darkSoft]),
+    "--accent-black-text": readableAccent(color, ["#1b1b1b", blackSoft]),
     "--accent-light-soft": lightSoft,
     "--accent-dark-soft": darkSoft,
+    "--accent-black-soft": blackSoft,
     "--accent-light-border": mix(color, "#ffffff", 0.72),
     "--accent-dark-border": mix(color, "#191a1c", 0.52),
+    "--accent-black-border": mix(color, "#000000", 0.45),
   };
 }
 
@@ -137,6 +141,9 @@ export function applyAppearance(
   preferences: Pick<Preferences, "accent" | "theme">,
 ) {
   document.documentElement.dataset.theme = preferences.theme;
+  // The blocking startup script supplies a background while bundled CSS loads.
+  document.documentElement.style.removeProperty("background-color");
+  document.documentElement.style.removeProperty("color-scheme");
   for (const [property, value] of Object.entries(
     accentTokens(preferences.accent),
   )) {

@@ -43,15 +43,16 @@ class ProviderActivity : Activity() {
     private lateinit var policy: RequestPolicy
     private lateinit var feedback: TextView
     private lateinit var progress: ProgressBar
-    private var english = false
+    private lateinit var language: AppLanguage
 
-    private fun text(sk: String, en: String) = if (english) en else sk
+    private fun text(sk: String, en: String, uk: String) = language.text(sk, en, uk)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        english = intent.getStringExtra("language") == "en"
+        val requestedLanguage = AppLanguage.parse(intent.getStringExtra("language"))
+        if (requestedLanguage == null) { finish(); return }
+        language = requestedLanguage
         val destination = when (intent.getStringExtra("destination")) {
-            "journeys" -> "https://www.ubian.sk/"
             "login" -> "https://www.ubian.sk/login"
             "support" -> "https://www.ubian.sk/pomoc-a-podpora"
             else -> null
@@ -69,13 +70,13 @@ class ProviderActivity : Activity() {
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val bar = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         val close = Button(this).apply {
-            this.text = text("Zavrieť", "Close")
+            this.text = text("Zavrieť", "Close", "Закрити")
             minHeight = (48 * resources.displayMetrics.density).toInt()
             setOnClickListener { finish() }
         }
         bar.addView(close)
         bar.addView(TextView(this).apply {
-            this.text = text("Web Ubian · cookies tretích strán vypnuté", "Ubian website · third-party cookies off")
+            this.text = text("Web Ubian · cookies tretích strán vypnuté", "Ubian website · third-party cookies off", "Сайт Ubian · сторонні cookie вимкнено · сайт словацькою")
             setPadding(12, 12, 12, 12)
         }, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
         root.addView(bar)
@@ -155,7 +156,7 @@ class ProviderActivity : Activity() {
                     // Remains secure for the rest of this account/login view.
                     window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 }
-                feedback.text = "www.ubian.sk"
+                feedback.text = if (language == AppLanguage.UK) "www.ubian.sk · сайт словацькою" else "www.ubian.sk"
             }
 
             override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
@@ -219,10 +220,10 @@ class ProviderActivity : Activity() {
         val uri = RequestPolicy.remoteUrl(raw) ?: return
         if (raw.length > 8192) return
         AlertDialog.Builder(this)
-            .setTitle(text("Otvoriť externý prehliadač?", "Open an external browser?"))
-            .setMessage(text("Cieľ: ${uri.host}\nRelácia a ochrana ubian-aggregator sa neprenesú.", "Destination: ${uri.host}\nThe ubian-aggregator session and protection will not transfer."))
-            .setNegativeButton(text("Zrušiť", "Cancel"), null)
-            .setPositiveButton(text("Otvoriť", "Open")) { _, _ ->
+            .setTitle(text("Otvoriť externý prehliadač?", "Open an external browser?", "Відкрити зовнішній браузер?"))
+            .setMessage(text("Cieľ: ${uri.host}\nRelácia a ochrana ubian-aggregator sa neprenesú.", "Destination: ${uri.host}\nThe ubian-aggregator session and protection will not transfer.", "Адреса: ${uri.host}\nСеанс і захист ubian-aggregator не переносяться."))
+            .setNegativeButton(text("Zrušiť", "Cancel", "Скасувати"), null)
+            .setPositiveButton(text("Otvoriť", "Open", "Відкрити")) { _, _ ->
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(raw)).addCategory(Intent.CATEGORY_BROWSABLE))
                 } catch (_: Exception) { showError("external_unavailable") }
@@ -233,9 +234,9 @@ class ProviderActivity : Activity() {
         ProviderSession.error(code)
         if (!::feedback.isInitialized) return
         feedback.text = when (code) {
-            "offline" -> text("Web nie je dostupný. Skontrolujte pripojenie.", "The website is unavailable. Check your connection.")
-            "tls_error", "unsafe_page", "navigation_blocked" -> text("Navigácia bola zablokovaná z bezpečnostných dôvodov.", "Navigation was blocked for safety.")
-            else -> text("Tento krok zatiaľ nie je overený alebo je nedostupný. Môžete sa vrátiť do ubian-aggregator.", "This step is unverified or unavailable. You can return to ubian-aggregator.")
+            "offline" -> text("Web nie je dostupný. Skontrolujte pripojenie.", "The website is unavailable. Check your connection.", "Сайт недоступний. Перевірте з’єднання.")
+            "tls_error", "unsafe_page", "navigation_blocked" -> text("Navigácia bola zablokovaná z bezpečnostných dôvodov.", "Navigation was blocked for safety.", "Перехід заблоковано з міркувань безпеки.")
+            else -> text("Tento krok zatiaľ nie je overený alebo je nedostupný. Môžete sa vrátiť do ubian-aggregator.", "This step is unverified or unavailable. You can return to ubian-aggregator.", "Цей крок ще не перевірено або він недоступний. Можна повернутися до ubian-aggregator.")
         }
     }
 

@@ -15,13 +15,34 @@
   --on-accent: #ffffff;
   --accent-light-text: #008033;
   --accent-dark-text: #65b585;
+  --accent-black-text: #65b585;
   --accent-light-soft: #edf7f1;
   --accent-dark-soft: #152c20;
+  --accent-black-soft: #001309;
   --accent-light-border: #b8dec7;
   --accent-dark-border: #105c31;
+  --accent-black-border: #004b1e;
   --accent-text: var(--accent-light-text);
   --accent-soft: var(--accent-light-soft);
   --accent-border: var(--accent-light-border);
+}
+
+:root[data-theme="black"] {
+  color-scheme: dark;
+  --background: #000000;
+  --sidebar: #000000;
+  --surface: #0d0d0d;
+  --surface-secondary: #141414;
+  --surface-hover: #1b1b1b;
+  --text: #f4f4f4;
+  --muted: #b6b6b6;
+  --border: #303030;
+  --border-strong: #626262;
+  --error: #ff9aa8;
+  --error-background: #270e15;
+  --accent-text: var(--accent-black-text);
+  --accent-soft: var(--accent-black-soft);
+  --accent-border: var(--accent-black-border);
 }
 
 :root[data-theme="dark"] {

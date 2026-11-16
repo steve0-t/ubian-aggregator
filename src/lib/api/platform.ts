@@ -1,4 +1,6 @@
-export type Destination = "journeys" | "login" | "support";
+import type { Language } from "../i18n";
+
+export type Destination = "login" | "support";
 
 export interface PlatformStatus {
   android: boolean;
@@ -44,6 +46,18 @@ function invoke<T>(
 }
 
 export const platformStatus = () => invoke<PlatformStatus>("status");
-export const openProvider = (destination: Destination, language: "sk" | "en") =>
+export const openProvider = (destination: Destination, language: Language) =>
   invoke<void>("open_provider", { destination, language });
 export const probeKeystore = () => invoke<ProbeReport>("keystore_probe");
+export const setSystemAppearance = (theme: "light" | "dark" | "black") =>
+  invoke<void>("set_appearance", { theme });
+
+export interface Stop {
+  id: number;
+  name: string;
+}
+
+// The Rust boundary currently returns source_unavailable, with no HTTP or
+// fixture fallback, until integration permission is documented and reviewed.
+export const lookupStops = (query: string) =>
+  invoke<Stop[]>("lookup_stops", { request: { query } });

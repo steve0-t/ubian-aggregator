@@ -2,6 +2,9 @@ package sk.cestou.platform
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
+import android.view.View
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -15,6 +18,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 class OpenArgs {
     lateinit var destination: String
     lateinit var language: String
+}
+
+@InvokeArg
+class AppearanceArgs {
+    lateinit var theme: String
 }
 
 @TauriPlugin
@@ -43,7 +51,7 @@ class AndroidPlatformPlugin(private val activity: Activity) : Plugin(activity) {
         var opening = false
         try {
             val args = invoke.parseArgs(OpenArgs::class.java)
-            if (args.destination !in setOf("journeys", "login", "support") || args.language !in setOf("sk", "en")) {
+            if (args.destination !in setOf("login", "support") || AppLanguage.parse(args.language) == null) {
                 invoke.reject("invalid_destination")
                 return
             }
@@ -60,6 +68,50 @@ class AndroidPlatformPlugin(private val activity: Activity) : Plugin(activity) {
         } catch (_: Exception) {
             if (opening) ProviderSession.launchFailed()
             invoke.reject("provider_unavailable")
+        }
+    }
+
+    @Command
+    @Suppress("DEPRECATION")
+    fun setAppearanceNative(invoke: Invoke) {
+        try {
+            val theme = invoke.parseArgs(AppearanceArgs::class.java).theme
+            val color = when (theme) {
+                "black" -> Color.BLACK
+                "dark" -> Color.rgb(25, 26, 28)
+                "light" -> Color.WHITE
+                else -> { invoke.reject("invalid_theme"); return }
+            }
+            activity.runOnUiThread {
+                try {
+                    activity.window.decorView.setBackgroundColor(color)
+                    activity.window.statusBarColor = color
+                    activity.window.navigationBarColor = color
+                    val light = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    activity.window.decorView.systemUiVisibility = if (theme == "light")
+                        activity.window.decorView.systemUiVisibility or light
+                    else activity.window.decorView.systemUiVisibility and light.inv()
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        activity.window.isStatusBarContrastEnforced = false
+                        activity.window.isNavigationBarContrastEnforced = false
+                    }
+                    invoke.resolve()
+                } catch (_: Exception) { invoke.reject("appearance_unavailable") }
+            }
+        } catch (_: Exception) { invoke.reject("invalid_theme") }
+    }
+
+    @Command
+    fun vaultStatusNative(invoke: Invoke) {
+        worker.execute {
+            try {
+                val metadata = AccountVault.get(activity).availability()
+                invoke.resolve(JSObject().apply {
+                    put("availability", metadata.availability)
+                    put("syntheticRecordPresent", metadata.syntheticRecordPresent)
+                    put("realCredentialsEnabled", false)
+                })
+            } catch (_: Exception) { invoke.reject("secure_storage_unavailable") }
         }
     }
 

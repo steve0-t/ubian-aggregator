@@ -6,13 +6,16 @@ use tauri::{
     Manager, Runtime, Webview,
 };
 
+use journey_core::timetable::{self, Language, Stop, StopQuery, TimetableError};
+use journey_core::vault::{VaultAvailability, VaultStatus};
 use journey_core::{Destination, NetworkPolicy, POLICY_JSON};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-enum Language {
-    Sk,
-    En,
+enum Appearance {
+    Light,
+    Dark,
+    Black,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -168,12 +171,82 @@ async fn keystore_probe<R: Runtime>(webview: Webview<R>) -> Result<ProbeReport, 
     Err("android_required")
 }
 
+#[tauri::command]
+async fn lookup_stops<R: Runtime>(
+    webview: Webview<R>,
+    request: StopQuery,
+) -> Result<Vec<Stop>, TimetableError> {
+    trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
+    timetable::lookup_stops(request)
+}
+
+#[tauri::command]
+async fn vault_status<R: Runtime>(webview: Webview<R>) -> Result<VaultStatus, &'static str> {
+    trusted(&webview)?;
+    #[cfg(target_os = "android")]
+    {
+        let app = webview.app_handle().clone();
+        return tauri::async_runtime::spawn_blocking(move || {
+            let mut status: VaultStatus = app
+                .state::<Platform<R>>()
+                .inner()
+                .0
+                .run_mobile_plugin("vaultStatusNative", ())
+                .map_err(|_| "secure_storage_unavailable")?;
+            // Native preparation can never enable real credential handling.
+            status.real_credentials_enabled = false;
+            Ok(status)
+        })
+        .await
+        .map_err(|_| "secure_storage_unavailable")?;
+    }
+    #[cfg(not(target_os = "android"))]
+    Ok(VaultStatus {
+        availability: VaultAvailability::UnsupportedPlatform,
+        synthetic_record_present: false,
+        real_credentials_enabled: false,
+    })
+}
+
+#[tauri::command]
+async fn set_appearance<R: Runtime>(
+    webview: Webview<R>,
+    theme: Appearance,
+) -> Result<(), &'static str> {
+    trusted(&webview)?;
+    #[cfg(target_os = "android")]
+    {
+        #[derive(Serialize)]
+        struct Payload {
+            theme: Appearance,
+        }
+        let app = webview.app_handle().clone();
+        return tauri::async_runtime::spawn_blocking(move || {
+            app.state::<Platform<R>>()
+                .inner()
+                .0
+                .run_mobile_plugin::<()>("setAppearanceNative", Payload { theme })
+                .map_err(|_| "appearance_unavailable")
+        })
+        .await
+        .map_err(|_| "appearance_unavailable")?;
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = theme;
+        Ok(())
+    }
+}
+
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("android-platform")
         .invoke_handler(tauri::generate_handler![
             status,
             open_provider,
-            keystore_probe
+            keystore_probe,
+            lookup_stops,
+            vault_status,
+            set_appearance
         ])
         .setup(|app, api| {
             #[cfg(target_os = "android")]
