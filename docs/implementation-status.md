@@ -1,5 +1,7 @@
 # Implementation status — 2026-11-14
 
+This is the initial implementation snapshot. Android tooling and build blockers listed here were subsequently resolved for an ARM64 debug build; see the [2026-11-16 build record](android-build.md#verified-debug-artifact--2026-11-16). Device validation and the architecture gate remain open.
+
 **Milestone 1 is in progress and blocked on Android build/device validation.** No milestone is marked complete and no APK is available. Per the plan's architecture gate, broad guest-data, authenticated, commerce and release functionality has not been built on an unproven Android integration.
 
 ## Independent work implemented

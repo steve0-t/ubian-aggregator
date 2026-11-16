@@ -1,61 +1,85 @@
 # Android setup and build
 
-**No APK has been built in this session.** These are the selected setup steps and the checks needed to prove them. Fresh-checkout Android reproducibility remains an open release criterion; do not treat a successful frontend build as Android validation.
+**An ARM64 debug APK was built on 2026-11-16.** Signature verification and packaged asset/resource checks passed. Device behavior, other ABIs, release builds and fresh-checkout reproducibility remain unverified.
 
 ## Selected and observed tooling
 
-| Component                      | Selected configuration                       | Actually available/tested here                                             |
-| ------------------------------ | -------------------------------------------- | -------------------------------------------------------------------------- |
-| Minimum Android                | API 26 / Android 8                           | Configuration only; no device                                              |
-| Compile/target SDK             | 37                                           | Native source type-checked with an installed API 37.2 jar; no Gradle build |
-| SDK platform package           | `platforms;android-37.0`                     | Not configured in the development shell                                    |
-| Build tools                    | 37.0.0                                       | Store copy exists, not used for packaging                                  |
-| NDK                            | 29.0.14206865                                | Missing                                                                    |
-| JDK                            | 17                                           | 17.0.21 used for the Kotlin host check                                     |
-| Rust                           | Stable, at least 1.90                        | 1.95.0; tests and Clippy pass with consistent compiler selection           |
-| Rust Android targets           | aarch64, armv7, i686, x86_64                 | None installed; only x86_64-unknown-linux-gnu exists                       |
-| Tauri runtime/build helper     | 2.12.5 / 2.7.4                               | Source dependencies pinned; not cached or compiled                         |
-| Tauri CLI                      | 2.12.4                                       | Missing                                                                    |
-| Kotlin                         | Version supplied by generated host           | Host type-check used cached compiler 2.2.21; Gradle version unverified     |
-| Node/npm                       | Node 22 LTS                                  | 22.23.4 / 10.9.9                                                           |
-| Gradle / Android Gradle plugin | Version supplied by pinned CLI host template | Host not generated; actual versions must be recorded after initialization  |
+| Component                      | Selected configuration                           | Actually available/tested here                                   |
+| ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------- |
+| Minimum Android                | API 26 / Android 8                               | Confirmed in merged debug manifest; no device                    |
+| Compile/target SDK             | 37                                               | Confirmed in packaged APK                                        |
+| SDK platform packages          | `platforms;android-36`, `platforms;android-37.0` | Both supplied by Nix and used by Gradle                          |
+| Build tools                    | 36.0.0 and 37.0.0                                | Both installed; SDK 37 aapt2 used for packaging                  |
+| NDK                            | 29.0.14206865                                    | ARM64 native library compiled and packaged                       |
+| JDK                            | 17                                               | 17.0.21 used for the Gradle build                                |
+| Rust                           | Stable, at least 1.90                            | 1.95.0; tests and Clippy pass with consistent compiler selection |
+| Rust Android targets           | aarch64, armv7, i686, x86_64                     | All four installed; aarch64 debug build verified                 |
+| Tauri runtime/build helper     | 2.12.5 / 2.7.4                                   | Compiled in the ARM64 debug build                                |
+| Tauri CLI                      | 2.12.4                                           | Installed in `~/.cargo/bin`; exposed by the Nix shell            |
+| Kotlin                         | 2.2.10                                           | Generated host and platform plugin compiled                      |
+| Node                           | Node 22 LTS                                      | 22.23.5                                                          |
+| Gradle / Android Gradle plugin | 9.6.1 / 9.3.1                                    | Generated wrapper used for successful debug APK build            |
 
-Tauri's current [Android prerequisites](https://v2.tauri.app/start/prerequisites/#android), [mobile plugin guide](https://v2.tauri.app/develop/plugins/develop-mobile/), and [CLI-generated Android template](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/android/app/build.gradle.kts) informed this configuration. Reconcile any SDK/package or Gradle requirements during the first real build and record the actual successful versions.
+Tauri's [Android prerequisites](https://v2.tauri.app/start/prerequisites/#android), [mobile plugin guide](https://v2.tauri.app/develop/plugins/develop-mobile/), and [CLI-generated Android template](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/android/app/build.gradle.kts) informed this configuration. Reconcile SDK/package and Gradle requirements when upgrading these dependencies.
 
-## Set up once on a network-enabled machine
+## Command-line setup
 
-Preserve `flake.nix`, `flake.lock` and `.envrc`. The shell now includes ADB and conventional SDK/NDK environment defaults; it does not silently install a multi-gigabyte SDK or accept SDK licenses.
+**Android Studio is not required.** Run all commands from the repository root. The locked Nix shell supplies JDK 17, ADB, SDK command-line tools 20.0, platforms 36 and 37.0, build tools 36.0.0 and 37.0.0, and NDK 29.0.14206865. Tauri's Android library uses SDK/build tools 36; the app uses 37. Both versions must be available because Gradle cannot install missing packages into the read-only Nix store. It reuses existing Nix store packages and downloads only missing dependencies. No emulator or IDE is included. `flake.nix` declares Android SDK license acceptance for these packages.
+
+The shell exports `JAVA_HOME`, `ANDROID_HOME`, `ANDROID_SDK_ROOT` and `NDK_HOME`, and adds SDK commands and `~/.cargo/bin` to `PATH`. Valid SDK/NDK paths supplied by the caller take precedence; empty or stale default directories fall back to the Nix toolchain. It also selects the SDK's patched `aapt2` through `GRADLE_OPTS`, so Gradle does not try to run an incompatible Maven binary on NixOS.
 
 ```sh
 nix develop path:.
 npm ci
-cargo install tauri-cli --version 2.12.4 --locked
+cargo tauri --version
 ```
 
-Install Android command-line tools through Android Studio's SDK Manager, then select the pinned packages. Accept SDK licenses through the SDK Manager as part of setup. Set `ANDROID_HOME` to your actual SDK location and `JAVA_HOME` to JDK 17 if not using the Nix shell.
+After changing the SDK composition, run `direnv reload` or leave and re-enter the Nix shell. Nesting `nix develop` inside an older shell can retain its valid but incomplete `ANDROID_HOME`.
+
+If the CLI is missing, install it with `cargo install tauri-cli --version 2.12.4 --locked`. Reuse an existing installation of that version. Likewise, add only missing Rust Android targets:
 
 ```sh
-export ANDROID_HOME="$HOME/Android/Sdk"
-export NDK_HOME="$ANDROID_HOME/ndk/29.0.14206865"
-sdkmanager "platform-tools" "platforms;android-37.0" "build-tools;37.0.0" "ndk;29.0.14206865"
+rustup target list --installed
 rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 rustup component add clippy rustfmt
 ```
 
-The SDK platform must be recognized as API 37 by the chosen Android Gradle plugin. A toolchain/package mismatch is an initialization blocker, not a reason to silently raise the minimum SDK or remove security configuration.
+### Use an existing SDK outside Nix
 
-Resolve the missing app dependency lockfile and retain it in source control:
+If your command-line tools are already installed, set the following paths to that installation. `JAVA_HOME` must point to a standalone JDK 17. Keep `ANDROID_HOME` and the legacy `ANDROID_SDK_ROOT` identical if both are set. For a standard command-line tools layout:
 
 ```sh
-cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
-npm run tauri -- android init
-npm run android:configure
+export JAVA_HOME="/path/to/jdk-17"
+export ANDROID_HOME="/path/to/android-sdk"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+export NDK_HOME="$ANDROID_HOME/ndk/29.0.14206865"
+export PATH="$HOME/.cargo/bin:$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+sdkmanager --list_installed
+```
+
+Skip package installation when the pinned packages are already present. For a writable SDK that is missing packages, install them and review/accept licenses entirely from the terminal:
+
+```sh
+sdkmanager --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-36" "platforms;android-37.0" "build-tools;36.0.0" "build-tools;37.0.0" "ndk;29.0.14206865"
+sdkmanager --sdk_root="$ANDROID_HOME" --licenses
+```
+
+Do not use `sdkmanager` to modify the read-only Nix store SDK; update the composition in `flake.nix` instead. The [Android command-line tools](https://developer.android.com/tools) are distributed separately from Android Studio.
+
+The SDK platform must be recognized as API 37 by the chosen Android Gradle plugin. A toolchain/package mismatch is an initialization blocker, not a reason to silently raise the minimum SDK or remove security configuration.
+
+### Regenerate the Android host when needed
+
+The generated host and app Cargo lockfile are committed. Fresh checkouts can run `npm run doctor` and proceed to the build. If the host needs regeneration after a tooling update:
+
+```sh
+npm run android:init
 npm run doctor
 ```
 
-Initialize once. `android:configure` applies API/build-tools/NDK pins, backup/transfer exclusions and network configuration to the generated host, and refuses unfamiliar templates. The maintained platform module is linked by its Tauri plugin build script. The script has idempotence and regeneration-security tests; the actual manifest merge is still unverified.
+`android:init` runs `cargo tauri android init --ci`, then `android:configure`. It does not open an IDE or prompt to install SDK components. Tauri may print “Generating Android Studio project”; this names the Gradle project format and does not require the IDE. `android:configure` applies API/build-tools/NDK pins, backup/transfer exclusions and network configuration to the generated host, and refuses unfamiliar templates. The maintained platform module is linked by its Tauri plugin build script. The script has idempotence and regeneration-security tests; the debug build's merged manifest was inspected as recorded below.
 
-Once a full build works, review and commit the generated host, wrapper version/checksums and relevant dependency locks; adjust its temporary `.gitignore` exclusion. Exclude local SDK paths, `.gradle`, build output and signing material. Do not hand-edit the generated host as the sole source of a fix: keep changes in the configuration script or native module and reapply them after regeneration.
+Review host, Gradle wrapper and dependency lock changes after regeneration. Local SDK paths, `.gradle`, build output, signing material, Tauri API copies, generated bindings and generated permission/schema files remain ignored. The local plugin's build script regenerates command permissions from its command list. Do not hand-edit the generated host as the sole source of a fix: keep changes in the configuration script or native module and reapply them after regeneration.
 
 ## Build and check
 
@@ -67,8 +91,27 @@ npm test
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --locked -- -D warnings
 cargo test --manifest-path src-tauri/Cargo.toml --locked
-npm run tauri -- android build --apk --debug
+npm run android:build -- --debug
 ```
+
+`android:build` reapplies the maintained configuration and invokes `cargo tauri android build --apk --ci`. Tauri runs the generated Gradle wrapper, so a system Gradle installation is unnecessary. The first build needs network access for uncached Cargo and Gradle dependencies. For a single ABI, use `npm run android:build -- --debug --target aarch64` (or `x86_64` for an emulator).
+
+### Verified debug artifact — 2026-11-16
+
+`npm run android:build -- --debug --target aarch64` succeeded in a refreshed Nix shell:
+
+- Artifact: `src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk`
+- ABI: `arm64-v8a` only, despite the generated variant name `universalDebug`.
+- Size: 123,629,155 bytes; debug signing verified with `apksigner verify`.
+- SHA-256: `322266961d3d312df7510a689bc576deb1c090f6b6d9527a6ba1a80b59950702`
+- APK checks: native library and DEX present; bundled `network-policy.json` matches the maintained policy; backup, transfer and network-security XML resources present.
+- Merged manifest: minimum SDK 26, target SDK 37, backup disabled and provider Activity not exported.
+
+The build fixes keep asset configuration in the platform module's `sourceSets { … }` block, avoiding AGP 9.3's legacy `AndroidLibrarySourceSet` cast, and supply SDK/build tools 36 alongside 37 in Nix. `npm test`, Gradle `help`, and `npm run doctor` also passed. No device installation or release build was performed.
+
+Keep APKs out of Git. The debug APK may be attached to a release as an explicitly labelled ARM64 debug asset with its SHA-256 and the validation limits above. The attachment remains a debug build and does not establish release-build or device validation.
+
+### Install for device checks
 
 Use a clean debug test installation first. Locate the actual artifact with:
 
@@ -83,7 +126,7 @@ adb install -r path/to/the-reported-debug.apk
 For the required release-build attempt:
 
 ```sh
-npm run tauri -- android build --apk
+npm run android:build
 ```
 
 Record the actual variant, artifact path, signing status, hashes and ABIs. A debug APK uses local development signing; release signing must be configured with private material outside this repository. No publishing, AAB distribution or real purchase is authorized by routine validation.
