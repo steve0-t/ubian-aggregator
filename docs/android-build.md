@@ -148,3 +148,26 @@ Before closing milestone 1, test on an emulator and physical device:
 7. Validate native libraries for 16 KB pages using current Android tooling, APK alignment inspection and an appropriate emulator/device (`adb shell getconf PAGE_SIZE`). An NDK version alone is not proof; recheck distribution requirements before release.
 
 Authentication, persistence/unlock and payments require their additional gates in [authentication.md](authentication.md) and [feature-coverage.md](feature-coverage.md). No test account or payment sandbox is presently available.
+
+## Revision 1 verification — 2026-11-16
+
+The earlier APK above predates Revision 1. A current ARM64 debug build was attempted with `npm run android:build -- --target aarch64 --debug`, but Rust compilation failed with `No space left on device`. No current-revision APK or packaged backup audit is claimed. The desktop Cargo build cache was removed to recover disk space. Re-run the APK build with sufficient free space before installing this revision.
+
+The maintained plugin and Android instrumentation Kotlin sources subsequently compiled successfully with Gradle, including the Tauri-facing class and the new synthetic account-vault tests:
+
+```sh
+cd src-tauri/gen/android
+./gradlew :tauri-plugin-android-platform:compileDebugKotlin :tauri-plugin-android-platform:compileDebugAndroidTestKotlin --no-configuration-cache --no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx768m
+```
+
+The final compilation passed after the pinned AndroidX test artifacts were downloaded. This does not execute instrumentation. No Android device was connected; tap/hold navigation, system bars, biometric authorization, AtomicFile failures, restore, provider cleanup and native timetable acceptance remain unverified or blocked. See [current status](implementation-status.md) and [the account-storage device backlog](vault-device-checks.md).
+
+## Optional interface browser check
+
+`scripts/check-browser.mjs` exercises the production bundle with a caller-supplied Playwright installation and Chromium. It does not download browser dependencies or run by default with `npm test`. Start `npm run preview -- --host 127.0.0.1 --port 1422` after `npm run build`, then supply the paths for the installed tools:
+
+```sh
+PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs CHROMIUM_EXECUTABLE=/absolute/path/to/chromium npm run check:browser
+```
+
+`UBIAN_UI_URL` optionally overrides the local preview URL. Checks cover Ukrainian/language and theme persistence, four palettes and custom accents, true-black base/navigation, 320/360px with 200% text, appearance placement, scoped interaction CSS, and desktop keyboard focus/release. These are Chromium host checks, not Android WebView/TalkBack or biometric verification.

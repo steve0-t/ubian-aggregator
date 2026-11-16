@@ -13,8 +13,11 @@
   const root = document.documentElement;
   root.dataset.theme = theme;
   root.lang = ["en", "uk"].includes(saved?.language) ? saved.language : "sk";
-  const dark = theme === "dark" || theme === "black" ||
+  const dark =
+    theme === "dark" ||
+    theme === "black" ||
     (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-  root.style.backgroundColor = theme === "black" ? "#000000" : dark ? "#191a1c" : "#ffffff";
+  root.style.backgroundColor =
+    theme === "black" ? "#000000" : dark ? "#191a1c" : "#ffffff";
   root.style.colorScheme = dark ? "dark" : "light";
 })();

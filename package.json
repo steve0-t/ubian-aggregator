@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+    "check:browser": "node scripts/check-browser.mjs",
     "check:kotlin": "bash scripts/check-kotlin.sh",
     "lint": "prettier --check .",
     "format": "prettier --write .",

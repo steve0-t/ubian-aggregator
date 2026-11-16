@@ -7,7 +7,9 @@ use tauri::{
 };
 
 use journey_core::timetable::{self, Language, Stop, StopQuery, TimetableError};
-use journey_core::vault::{VaultAvailability, VaultStatus};
+#[cfg(not(target_os = "android"))]
+use journey_core::vault::VaultAvailability;
+use journey_core::vault::VaultStatus;
 use journey_core::{Destination, NetworkPolicy, POLICY_JSON};
 
 #[derive(Serialize, Deserialize)]

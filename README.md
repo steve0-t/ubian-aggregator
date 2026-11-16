@@ -2,9 +2,11 @@
 
 An unofficial Android client for [Ubian](https://www.ubian.sk/), using Rust, Tauri 2, Svelte and TypeScript. ubian-aggregator is not affiliated with Ubian.
 
-**Current state: milestone 1 integration spike, not a usable Android release.** An ARM64 debug APK builds successfully, the local frontend builds and the shared URL policy has host tests. Android rendering, actual Keystore behavior, authentication and privacy behavior still require device validation. See the [verified build record](docs/android-build.md#verified-debug-artifact--2026-11-16).
+**Current state: Revision 1 is in progress, not a usable Android release.** Interface changes and synthetic account-storage preparation are implemented. Native timetables remain incomplete: an anonymous stop response was inspected, but permitted integration access has not been established. The app shows this blocker locally and does not hand timetable searches to a website or return sample schedules. See [provider discovery](docs/provider-discovery.md) and [implementation status](docs/implementation-status.md).
 
-The implementation follows [INSTRUCTIONS.md](INSTRUCTIONS.md). Its original document-only boundary predates this implementation task. The Android architecture gate remains open; later milestones have not been declared complete.
+An earlier ARM64 debug APK was built successfully; see the [2026-11-16 build record](docs/android-build.md#verified-debug-artifact--2026-11-16). That artifact does not verify the current revision or Android behavior. No Android device is currently connected. The Android architecture gate remains open.
+
+The implementation follows [INSTRUCTIONS.md](INSTRUCTIONS.md), as amended by [REVISION.md](REVISION.md). The original document-only boundary predates this implementation task.
 
 ## Run the local interface
 
@@ -14,9 +16,13 @@ npm ci
 npm run dev
 ```
 
-The browser preview contains no provider iframe, fake schedules or simulated login. Native actions are unavailable outside the Android application. Slovak is the default; English is selectable in Settings. The app has an original route-line icon in `public/icon.svg`.
+The browser preview contains no provider iframe, fake schedules or simulated login. Native actions require the Android app. Slovak is the default; English and **Українська** are selectable in Settings and persist across restarts. Local accessibility labels, validation and status text are translated. Provider stop names and identifiers stay unchanged. Ukrainian native provider controls use Ukrainian text around the Slovak provider page; this does not claim that Ubian offers a Ukrainian website.
 
-The local interface uses a Notesnook-inspired neutral palette, a desktop sidebar and mobile bottom navigation. **Settings → Appearance** offers system, light and dark themes, six accent presets, and a custom color picker or `#RRGGBB` input. Colors update immediately, with contrasting text for custom accents. Theme, accent and language preferences are saved in local browser/WebView storage; no account or browsing data is stored there by this interface. If storage is unavailable, appearance changes still work for the current run.
+The local interface has a desktop sidebar and mobile bottom navigation. Appearance controls live together in **Settings → Appearance**: System, Light, Dark and True black / AMOLED, six accent presets, a custom color picker or `#RRGGBB` input, and reset. True black uses `#000000` for the main and navigation backgrounds; cards retain subtle borders and tones. A bundled blocking startup script applies the saved base palette before app initialization. Explicit Black stays selected when the device theme changes; System follows light/dark. Android system-bar matching is implemented but needs device verification.
+
+Theme, accent and language preferences use local browser/WebView storage. Account records are separate; searches and personal journey history are not persisted. If preference storage is unavailable, appearance changes still work for the current run. Navigation has scoped tap-highlight and text-selection suppression with accent feedback and visible keyboard focus; the reported Android blue flash has not been reproduced or device-verified.
+
+Account and support retain fixed, restricted provider entry points. Remember session and Save login credentials are distinct, off and unavailable. The synthetic storage scaffold cannot save or reuse real credentials. WebView-managed cookies and website storage are a separate persistence boundary; encrypting app records does not encrypt those stores with the vault key.
 
 ## Verify independent work
 
@@ -32,9 +38,9 @@ cargo clippy --manifest-path crates/journey-core/Cargo.toml --all-targets --lock
 npm run test:core
 ```
 
-`npm run lint` checks formatting; Svelte/TypeScript diagnostics, including compiler accessibility warnings, are in `npm run check`. Runtime accessibility is unverified.
+`npm run lint` checks formatting. Svelte/TypeScript diagnostics, including compiler accessibility warnings, are in `npm run check`. `npm test` covers preferences, translations, Bratislava date/time formatting, local timetable state and security configuration. The core Rust checks cover source input/parsing and internal vault metadata as well as URL policy. `npm run check:kotlin` additionally checks native sources and runs a synthetic storage harness when the compiler/SDK environment described in [android-build.md](docs/android-build.md) is supplied. JVM substitutes do not establish Android Keystore or biometric behavior.
 
-The independent core crate and Tauri app have committed Cargo lockfiles. Full application checks remain required; see the [build record](docs/android-build.md) and earlier [verification results](docs/implementation-status.md).
+The independent core crate and Tauri app have committed Cargo lockfiles. See [implementation status](docs/implementation-status.md) for checks actually completed in this revision; a build alone does not establish runtime accessibility, native timetables or secure account storage.
 
 ## Continue on Android
 

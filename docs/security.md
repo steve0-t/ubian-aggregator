@@ -1,25 +1,61 @@
 # Security boundary and remaining work
 
-The milestone-1 implementation exposes only status, fixed-destination navigation and a public-data Keystore probe. There is no generic HTTP, filesystem, shell, script or secret command. Provider content is never inserted into the bundled frontend. Android-only functionality is unavailable on desktop/browser builds.
+The trusted frontend is bundled Svelte. Six narrowly scoped, local-only plugin commands cover platform status, fixed login/support navigation, the public Keystore probe, appearance, gated stop lookup and nonsensitive synthetic-vault status. There is no generic HTTP, filesystem, shell, script or secret-read command. The provider Activity has no Tauri or JavaScript application bridge. Its pages cannot invoke vault operations.
 
-## Test-record encryption
+Native timetables are incomplete. The stop parsing spike uses a sanitized observed fixture in tests; runtime lookup validates input and returns `source_unavailable` without network traffic or fixture fallback. A permitted source and bounded transport still need verification. Provider text renders as text, never downloaded HTML or scripts in the privileged interface. See [provider discovery](provider-discovery.md).
 
-`ProbeVault.kt` uses Android Keystore AES-256/GCM/NoPadding with a fresh platform-generated 96-bit nonce and a 128-bit tag. Version 1 and purpose `keystore-probe` are authenticated additional data. A record contains a version integer, nonce and ciphertext/tag. Unknown versions, invalid lengths, authentication failures and missing keys throw; there is no plaintext fallback.
+## Public test probe
 
-The key is non-exportable through the Android Keystore interface. Ciphertext uses `AtomicFile` in `noBackupFilesDir`; writes use file-descriptor mode 0600, commit atomically or fail back to the prior file. Reads are size-bounded. The public probe checks a disk round-trip, tag modification, nonce variation, missing-key rejection and reported hardware backing, then deletes its file/key. A subsequent probe removes only stale keys in its dedicated public-test namespace after process death. No credential keys exist.
+`ProbeVault.kt` remains a public-data diagnostic. It uses non-exportable Android Keystore AES-256/GCM/NoPadding, a fresh platform-generated 96-bit nonce, a 128-bit tag and authenticated version/purpose data. Its record/file/key namespace is separate from account preparation. It tests round-trip, tampering, nonce variation and missing-key rejection, then removes its public artifacts. Reported hardware backing comes from `KeyInfo`; hardware backing is device-dependent.
 
-**This is not the saved-credential vault.** The public test key deliberately does not require user authentication. Device/biometric authorization, enrollment/lock changes, key invalidation and authenticated secret reuse must be implemented and tested before storing a real password. The probe never receives a secret from Svelte and returns only booleans. Hardware backing is reported by `KeyInfo`, not assumed. See [Android Keystore](https://developer.android.com/privacy-and-security/keystore).
+**The public probe is not a credential vault.** Its key deliberately does not require user authentication, and a successful probe does not enable real account storage. Its actual Keystore behavior has not been exercised on a device in this revision.
 
-## Website and Android data
+## Synthetic account record
 
-Website cookies, IndexedDB, local storage and caches remain Android-managed data. No cookie export or custom token persistence is implemented. Cookie cleanup has a completion gate; WebStorage/service-worker deletion still needs device evidence. Do not enable remember-session, account switching or saved login while that gate is unresolved.
+The internal foundation uses only the fixed synthetic value created inside `SyntheticVault`. No website password or frontend-supplied secret enters it. Unlock verifies that value and returns status only; decrypted bytes are cleared in a `finally` block. The initial platform authorizer uses the same Cipher CryptoObject before and after a successful biometric prompt. The process-owned status instance deliberately has no usable authorizer for frontend save/use.
 
-The maintained module and generated-host configuration disable backup and supply both legacy backup exclusions and Android 12+ cloud/device-transfer exclusions, including credential- and device-protected domains. `noBackupFilesDir` is an additional exclusion. Source configuration tests do not prove an OEM's restore behavior; inspect the merged manifest and packaged rules and test restore/key loss on device. See [Android backup configuration](https://developer.android.com/identity/data/autobackup).
+| Field                             | Size                | Version 1 meaning                                   |
+| --------------------------------- | ------------------- | --------------------------------------------------- |
+| Magic                             | 4 bytes             | `CVAU` (`0x43564155`)                               |
+| Version                           | 4 bytes, big endian | `1`                                                 |
+| Purpose                           | 1 byte              | `1`, synthetic account-storage preparation only     |
+| Nonce                             | 12 bytes            | Platform-generated AES-GCM IV for this write        |
+| Ciphertext and authentication tag | Up to 4,112 bytes   | At most 4,096 plaintext bytes and a 128-bit GCM tag |
 
-Production network configuration trusts system certificates and denies cleartext. A separate debug XML permits only localhost, 127.0.0.1 and the emulator host for the frontend dev server; provider policy still requires HTTPS. Additional LAN development hosts need an explicit debug-only rule. Release builds must not inherit a development exception.
+The complete 9-byte magic/version/purpose header is additional authenticated data. Reads reject malformed lengths, magic, purpose and unsupported versions before use; failed authentication returns no partial plaintext. All writes initialize a new encryption Cipher and use its platform-generated IV. The engine also rejects an IV equal to the previous record's IV. This tests fresh nonce behavior but is not a claim that a short test proves global random uniqueness.
 
-Login/registration navigation sets `FLAG_SECURE` for the remainder of that provider view. Public journey views are not intentionally screenshot-restricted. Test screenshot and recent-app behavior, including redirects to authenticated pages, before claiming full account-screen coverage.
+The synthetic alias is `cestou.account-preparation.synthetic.v1`, and ciphertext is `account-preparation-synthetic.v1.bin` inside app-private `noBackupFilesDir`. Public probes use `cestou.probe.*` and a separate probe file. Appearance/language preferences retain their browser-storage record and never hold account data. Real credentials have no implemented record purpose, namespace, save endpoint or reuse path; adding them requires a separately reviewed version/purpose and the gates in [authentication](authentication.md).
 
-## Limits
+There is no automatic migration. Unknown versions fail as `unsupported_version` and remain unusable until an explicit authenticated migration is implemented. A future migration must decrypt with the correct old key/purpose only after authorization, validate the old schema, reseal with fresh nonce and new authenticated metadata, and atomically commit before retiring the old key/record. It must preserve the old committed record on pre-commit failure. No password-derived key or plaintext fallback is permitted.
 
-The intended threat model includes accidental file/backup extraction, ordinary cross-app access and untrusted website content. It does not protect against a compromised OS, a compromised running app or the provider receiving a password during login. JVM/JavaScript memory cannot be promised immediate erasure. There are no real credentials or authenticated captures in the test fixtures. Instrumentation tests are present but unrun; the full Tauri/native trust boundary has not been device-tested.
+`AndroidVaultFiles` uses `AtomicFile`, file mode 0600, bounded reads and an explicit file-descriptor sync before replacement. It checks the replacement because Android's commit API returns no success value. Interrupted/replacement failure handling needs actual filesystem/device fault testing; JVM substitute tests are not proof of AtomicFile durability. An existing record with a missing key is rejected rather than silently assigned a new key. Restore/key loss requires fresh sign-in in any future real-account flow.
+
+## Authentication and lifecycle
+
+The synthetic key uses non-exportable AES-256/GCM with randomized encryption, authentication required for every encrypt/decrypt operation, and invalidation on biometric enrollment changes. API 30+ binds key use to `AUTH_BIOMETRIC_STRONG` with a zero-second validity window. API 29 uses the per-use CryptoObject path; its capability precheck may accept a device whose available biometric cannot authorize the key, so successful capability detection is provisional. API 26–28 decline secure persistence. Device-credential fallback and equivalence across devices are not claimed; StrongBox is not required. See [Android Keystore](https://developer.android.com/privacy-and-security/keystore) and [biometric authorization guidance](https://developer.android.com/identity/sign-in/biometric-auth).
+
+The initial native prompt handles canceled, unavailable, finishing/destroyed Activity and failed-scan paths and sets `FLAG_SECURE` during the synthetic prompt. Enrollment/lock changes, hardware/OS variations and real authorization must still be verified on devices. Typed failures include authentication cancellation/unavailability, missing/invalidated keys, tampering, unsupported version, malformed record, busy operation, nonce reuse and I/O failure. Errors contain no secret, provider response or raw exception text.
+
+`SyntheticVault` serializes operations and uses generations to reject obsolete authorization callbacks. Delete cancels the prompt, revokes its generation, attempts key deletion before file deletion and attempts both even after partial failure. Its internal API has no arbitrary secret-read or script operation. The host harness covers reentrant callbacks, throwing completions, deletion races, substituted Ciphers and repeated-IV rejection; equivalent device behavior remains unverified. Full session cleanup remains a specified future coordinator, described in [authentication](authentication.md); the synthetic vault does not establish provider logout or website deletion.
+
+## Website persistence and backup
+
+WebView cookies, IndexedDB, local storage, cache and service-worker state remain Android-managed data. They are not encrypted with the application vault key merely because application records are encrypted. The wrapper does not export cookies or persist tokens itself. Remember session and Save login credentials are distinct, off and unavailable. Cleanup is requested before provider open and after normal close; a new opening requests cleanup after process death as well. Cookie deletion has a completion gate, while WebStorage/service-worker completion remains unresolved.
+
+Maintained module and regenerated-host configuration disable backup and supply legacy full-backup exclusions plus Android 12+ cloud-backup/device-transfer exclusions. Both formats exclude credential-protected and device-protected root/file/database/shared-preference domains, and other app domains; `noBackupFilesDir` is an additional exclusion for ciphertext. Host configuration tests check regeneration and rules. The earlier [packaged debug artifact audit](android-build.md#verified-debug-artifact--2026-11-16) does not replace a current-revision APK audit or an OEM restore test. Inspect packaged manifest/rules, exercise cloud backup/device transfer, and verify that restored ciphertext without its original Keystore key cannot be used. See [Android backup configuration](https://developer.android.com/identity/data/autobackup).
+
+Production network configuration trusts system certificates and denies cleartext. A separate debug XML permits only localhost, 127.0.0.1 and the emulator host for the frontend development server; provider policy still requires HTTPS. Release builds must not inherit a development exception. Login/registration navigation sets `FLAG_SECURE` for the remainder of that provider view. Public local timetable screens are not intentionally screenshot-restricted. Screenshot and recent-app behavior across redirects still need device evidence.
+
+## Verification limits and backlog
+
+The JVM harness uses synthetic values with substitute keys, files and authentication. It covers the shared record/state-machine behavior, not Android Keystore, biometric security, backup behavior or filesystem crash durability. Rust checks cover metadata serialization and the absence of a serializable secret payload. Android plugin and instrumentation Kotlin compile successfully with Gradle. The instrumentation sources are a verification path; no device is currently connected, so device checks remain unrun. See [the focused device backlog](vault-device-checks.md).
+
+Before real storage can be enabled, verify:
+
+- Authentication-bound encryption/decryption round-trip, rejected unauthenticated key use, canceled/unavailable prompts, weak-only biometrics on API 29, enrollment changes, lock changes and key invalidation/loss.
+- Record/header/tag tampering, nonce variation, bounded reads, interrupted writes, sync/rename/storage failures, migration refusal and restart recovery.
+- Deletion and failed partial deletion, late unlock/save callbacks, concurrent logout/navigation, process death and cleanup retries without resurrecting account state.
+- Packaged backup rules, cloud/device-transfer restore without the original key, website-state persistence/cleanup, screenshots, recent-app previews and absence of known synthetic secrets in logs/storage/events/URLs/diagnostics.
+- Provider authenticated-state detection and safe, fixed credential delivery independent of vault encryption.
+
+The threat model includes accidental file/backup extraction, ordinary cross-app access and untrusted page content. It does not protect against a compromised OS, compromised running application or the provider receiving a password during login. JVM/JavaScript memory cannot be promised immediate complete erasure. No real credentials or authenticated captures belong in test fixtures.

@@ -10,6 +10,7 @@ private class MemoryKeys : VaultKeys {
     var invalidated = false
     var available = true
     var deletionFails = false
+    var reusedNonce: ByteArray? = null
     override fun authenticationAvailable() = available
     override fun exists() = key != null
     override fun create() { key = KeyGenerator.getInstance("AES").apply { init(256) }.generateKey() }
@@ -17,7 +18,9 @@ private class MemoryKeys : VaultKeys {
         if (invalidated) throw VaultException(VaultFailure.KEY_INVALIDATED)
         return key ?: throw VaultException(VaultFailure.KEY_MISSING)
     }
-    override fun encryptCipher(): Cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, requireKey()) }
+    override fun encryptCipher(): Cipher = Cipher.getInstance("AES/GCM/NoPadding").apply {
+        if (reusedNonce == null) init(Cipher.ENCRYPT_MODE, requireKey()) else init(Cipher.ENCRYPT_MODE, requireKey(), GCMParameterSpec(128, reusedNonce))
+    }
     override fun decryptCipher(nonce: ByteArray): Cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.DECRYPT_MODE, requireKey(), GCMParameterSpec(128, nonce)) }
     override fun delete() {
         if (deletionFails) throw VaultException(VaultFailure.IO_FAILURE)
@@ -28,8 +31,12 @@ private class MemoryKeys : VaultKeys {
 private class MemoryFiles : VaultFiles {
     var record: ByteArray? = null
     var writeFails = false
+    var readFails = false
     var deleteFails = false
-    override fun read() = record?.clone()
+    override fun read(): ByteArray? {
+        if (readFails) throw VaultException(VaultFailure.IO_FAILURE)
+        return record?.clone()
+    }
     override fun write(record: ByteArray) {
         if (writeFails) throw VaultException(VaultFailure.IO_FAILURE)
         this.record = record.clone()
@@ -43,11 +50,12 @@ private class MemoryFiles : VaultFiles {
 private class Authorization : VaultAuthorization {
     var cancelled = false
     var delayed = false
+    var substitute: Cipher? = null
     var finish: (() -> Unit)? = null
     override fun authorize(cipher: Cipher, complete: (Result<Cipher>) -> Unit): () -> Unit {
         val callback = {
             if (cancelled) complete(Result.failure(VaultException(VaultFailure.AUTHENTICATION_CANCELLED)))
-            else complete(Result.success(cipher))
+            else complete(Result.success(substitute ?: cipher))
         }
         if (delayed) finish = callback else callback()
         return { cancelled = true }
@@ -88,6 +96,28 @@ fun main() {
     vault.unlockAndVerifySynthetic(done)
     failure(result, VaultFailure.UNSUPPORTED_VERSION)
     files.record = original.clone()
+    files.record = original.clone().also { it[10] = (it[10].toInt() xor 1).toByte() }
+    vault.unlockAndVerifySynthetic(done)
+    failure(result, VaultFailure.TAMPERED)
+    files.record = original.clone()
+    keys.reusedNonce = VaultRecord.nonce(original)
+    vault.saveOrUpdateSynthetic(done)
+    failure(result, VaultFailure.NONCE_REUSED)
+    check(files.record!!.contentEquals(original))
+    keys.reusedNonce = null
+    auth.substitute = keys.encryptCipher()
+    vault.saveOrUpdateSynthetic(done)
+    failure(result, VaultFailure.AUTHENTICATION_CANCELLED)
+    check(files.record!!.contentEquals(original))
+    auth.substitute = null
+    files.readFails = true
+    vault.unlockAndVerifySynthetic(done)
+    failure(result, VaultFailure.IO_FAILURE)
+    check(vault.availability().availability == "io_failure")
+    files.readFails = false
+    var deliveryCount = 0
+    vault.unlockAndVerifySynthetic { deliveryCount++; throw IllegalStateException("synthetic callback failure") }
+    check(deliveryCount == 1)
     auth.cancelled = true
     vault.saveOrUpdateSynthetic(done)
     failure(result, VaultFailure.AUTHENTICATION_CANCELLED)
@@ -127,6 +157,15 @@ fun main() {
     failure(result, VaultFailure.AUTHENTICATION_CANCELLED)
     late()
     check(callbacks == 1 && files.record == null && keys.key == null)
+    // A canceled caller cannot reenter save while deletion is in progress.
+    auth.cancelled = false
+    var reentrant: Result<Unit>? = null
+    vault.saveOrUpdateSynthetic { vault.saveOrUpdateSynthetic { reentrant = it } }
+    val oldAuthorization = auth.finish!!
+    check(vault.deleteSynthetic().isSuccess)
+    failure(reentrant, VaultFailure.BUSY)
+    oldAuthorization()
+    check(files.record == null && keys.key == null)
     // Deletion tries both steps and stays retryable on partial failure.
     auth.delayed = false
     auth.cancelled = false

@@ -104,17 +104,33 @@
   onMount(() => {
     const deviceTheme = matchMedia("(prefers-color-scheme: dark)");
     const syncBars = () => {
-      const resolved = theme === "system" ? (deviceTheme.matches ? "dark" : "light") : theme;
-      const color = resolved === "black" ? "#000000" : resolved === "dark" ? "#191a1c" : "#ffffff";
-      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
-      if (native) void setSystemAppearance(resolved).then(
-        () => { systemAppearanceFailed = false; },
-        () => { systemAppearanceFailed = true; },
-      );
+      const resolved =
+        theme === "system" ? (deviceTheme.matches ? "dark" : "light") : theme;
+      const color =
+        resolved === "black"
+          ? "#000000"
+          : resolved === "dark"
+            ? "#191a1c"
+            : "#ffffff";
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", color);
+      if (native)
+        void setSystemAppearance(resolved).then(
+          () => {
+            systemAppearanceFailed = false;
+          },
+          () => {
+            systemAppearanceFailed = true;
+          },
+        );
     };
     // A root attribute observer also covers explicit settings changes.
     const appearanceObserver = new MutationObserver(syncBars);
-    appearanceObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    appearanceObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
     deviceTheme.addEventListener("change", syncBars);
     syncBars();
     void refresh();
@@ -233,7 +249,6 @@
         <span class="build-badge"
           ><span class="status-dot"></span>{t.developmentLabel}</span
         >
-
       </div>
     </header>
 
@@ -277,7 +292,6 @@
               >
               <Icon name="chevron" size={18} />
             </button>
-
           </div>
 
           <section class="privacy-summary" aria-labelledby="privacy-title">
@@ -294,7 +308,6 @@
               </details>
             </div>
           </section>
-
         {:else if tab === "account"}
           <div class="page-intro">
             <h1>{t.accountTitle}</h1>
@@ -324,8 +337,14 @@
             <div class="information-row">
               <div>
                 <h2>{t.storagePreparation}</h2>
-                <label class="unavailable-option"><input type="checkbox" disabled />{t.rememberSession} <span>{t.unavailableOff}</span></label>
-                <label class="unavailable-option"><input type="checkbox" disabled />{t.saveCredentials} <span>{t.unavailableOff}</span></label>
+                <label class="unavailable-option"
+                  ><input type="checkbox" disabled />{t.rememberSession}
+                  <span>{t.unavailableOff}</span></label
+                >
+                <label class="unavailable-option"
+                  ><input type="checkbox" disabled />{t.saveCredentials}
+                  <span>{t.unavailableOff}</span></label
+                >
                 <p>{t.providerLanguage}</p>
                 <p>{t.returnHint}</p>
               </div>
@@ -362,7 +381,9 @@
               </div>
             </div>
 
-            {#if systemAppearanceFailed}<p class="field-error" role="status">{t.systemAppearanceError}</p>{/if}
+            {#if systemAppearanceFailed}<p class="field-error" role="status">
+                {t.systemAppearanceError}
+              </p>{/if}
             <fieldset class="theme-fieldset">
               <legend>{t.theme}</legend>
               <div class="theme-options">

@@ -1,7 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { messages, formatTimetableTime, formatTimetableDate } from "../src/lib/i18n/index.ts";
-import { SearchRequest, searchError, validStopQuery } from "../src/lib/timetable-state.ts";
+import {
+  messages,
+  formatTimetableTime,
+  formatTimetableDate,
+} from "../src/lib/i18n/index.ts";
+import {
+  SearchRequest,
+  searchError,
+  validStopQuery,
+} from "../src/lib/timetable-state.ts";
 
 test("all three dictionaries have complete, nonempty messages", () => {
   const keys = Object.keys(messages.sk).sort();
@@ -23,10 +31,17 @@ test("timetable formatting preserves Bratislava midnight and DST across device z
       ["2026-03-29T01:30:00Z", "03:30"],
       ["2026-10-25T00:30:00Z", "02:30"],
       ["2026-10-25T01:30:00Z", "02:30"],
-    ]) assert.equal(formatTimetableTime(new Date(instant), language), expected);
-    assert.match(formatTimetableDate(new Date("2026-11-16T23:15:00Z"), language), /17/);
+    ])
+      assert.equal(formatTimetableTime(new Date(instant), language), expected);
+    assert.match(
+      formatTimetableDate(new Date("2026-11-16T23:15:00Z"), language),
+      /17/,
+    );
   }
-  assert.match(formatTimetableDate(new Date("2026-11-16T23:15:00Z"), "uk"), /листопада/);
+  assert.match(
+    formatTimetableDate(new Date("2026-11-16T23:15:00Z"), "uk"),
+    /листопада/,
+  );
 });
 
 test("cancellation and superseded searches reject late completions", () => {
@@ -42,12 +57,22 @@ test("cancellation and superseded searches reject late completions", () => {
 
 test("search errors are local message keys and never raw provider content", () => {
   for (const [code, expected] of Object.entries({
-    source_unavailable: "timetableBlocked", invalid_query: "queryInvalid",
-    offline: "offline", timeout: "timeout", rate_limited: "rateLimited",
-    provider_changed: "providerChanged", android_required: "nativeUnavailable",
-  })) assert.equal(searchError(code), expected);
-  assert.equal(searchError("<script>private server data</script>"), "genericError");
+    source_unavailable: "timetableBlocked",
+    invalid_query: "queryInvalid",
+    offline: "offline",
+    timeout: "timeout",
+    rate_limited: "rateLimited",
+    provider_changed: "providerChanged",
+    android_required: "nativeUnavailable",
+  }))
+    assert.equal(searchError(code), expected);
+  assert.equal(
+    searchError("<script>private server data</script>"),
+    "genericError",
+  );
   assert.equal(searchError({ message: "provider response" }), "genericError");
-  for (const query of ["", "a", "a\n", "xx\u0000", "x".repeat(101)]) assert.equal(validStopQuery(query), false);
-  for (const query of ["  Bratislava, Račianske mýto  ", "Київ", "🚆🚆"]) assert.equal(validStopQuery(query), true);
+  for (const query of ["", "a", "a\n", "xx\u0000", "x".repeat(101)])
+    assert.equal(validStopQuery(query), false);
+  for (const query of ["  Bratislava, Račianske mýto  ", "Київ", "🚆🚆"])
+    assert.equal(validStopQuery(query), true);
 });

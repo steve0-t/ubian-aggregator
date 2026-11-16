@@ -95,7 +95,8 @@ const sk = {
   orange: "Oranžová",
   localStatus: "Dostupné v Android aplikácii",
   timetableIncomplete: "Cestovné poriadky v aplikácii zatiaľ nie sú dostupné",
-  timetableBlocked: "Prístup k zdroju cestovných poriadkov pre túto aplikáciu ešte nie je potvrdený. Vyhľadávanie spojení, odchody a detaily sa zatiaľ nedajú použiť.",
+  timetableBlocked:
+    "Prístup k zdroju cestovných poriadkov pre túto aplikáciu ešte nie je potvrdený. Vyhľadávanie spojení, odchody a detaily sa zatiaľ nedajú použiť.",
   noJourneyHistory: "Vyhľadávania sa neukladajú. Účet nie je potrebný.",
   stopQuery: "Názov zastávky",
   lookupStop: "Vyhľadať zastávku",
@@ -105,16 +106,19 @@ const sk = {
   offline: "Nie ste pripojení. Skontrolujte pripojenie a skúste to znova.",
   timeout: "Vyhľadávanie trvalo príliš dlho. Skúste to znova neskôr.",
   rateLimited: "Príliš veľa požiadaviek. Počkajte a skúste to znova.",
-  providerChanged: "Formát údajov poskytovateľa sa zmenil. Vyhľadávanie je nedostupné.",
+  providerChanged:
+    "Formát údajov poskytovateľa sa zmenil. Vyhľadávanie je nedostupné.",
   noStops: "Nenašli sa žiadne zastávky.",
   searching: "Vyhľadávajú sa zastávky…",
-  providerLanguage: "Jazyk webu Ubian sa riadi webom poskytovateľa. Pre ukrajinčinu používame slovenskú stránku; miestne ovládanie zostáva preložené.",
+  providerLanguage:
+    "Jazyk webu Ubian sa riadi webom poskytovateľa. Pre ukrajinčinu používame slovenskú stránku; miestne ovládanie zostáva preložené.",
   rememberSession: "Zapamätať reláciu",
   saveCredentials: "Uložiť prihlasovacie údaje",
-  storagePreparation: "Pripravuje sa úložisko chránené overením zariadenia. Používa iba syntetické údaje. Skutočné prihlasovacie údaje sa nedajú uložiť ani opätovne použiť.",
+  storagePreparation:
+    "Pripravuje sa úložisko chránené overením zariadenia. Používa iba syntetické údaje. Skutočné prihlasovacie údaje sa nedajú uložiť ani opätovne použiť.",
   unavailableOff: "Vypnuté · zatiaľ nedostupné",
-  systemAppearanceError: "Vzhľad aplikácie je nastavený; farby systémových panelov Android sa nepodarilo zmeniť.",
-
+  systemAppearanceError:
+    "Vzhľad aplikácie je nastavený; farby systémových panelov Android sa nepodarilo zmeniť.",
 };
 
 type Messages = { [K in keyof typeof sk]: string };
@@ -212,7 +216,8 @@ const en: Messages = {
   orange: "Orange",
   localStatus: "Available in the Android app",
   timetableIncomplete: "In-app timetables are not available yet",
-  timetableBlocked: "Access to the timetable source for this app has not been confirmed. Connection search, departures and details are not available yet.",
+  timetableBlocked:
+    "Access to the timetable source for this app has not been confirmed. Connection search, departures and details are not available yet.",
   noJourneyHistory: "Searches are not saved. No account is needed.",
   stopQuery: "Stop name",
   lookupStop: "Find a stop",
@@ -222,19 +227,20 @@ const en: Messages = {
   offline: "You are offline. Check your connection and try again.",
   timeout: "The search timed out. Try again later.",
   rateLimited: "Too many requests. Please wait and try again.",
-  providerChanged: "The provider data format has changed. Search is unavailable.",
+  providerChanged:
+    "The provider data format has changed. Search is unavailable.",
   noStops: "No stops found.",
   searching: "Finding stops…",
-  providerLanguage: "The Ubian website controls its own language. Ukrainian uses the Slovak page; local controls stay translated.",
+  providerLanguage:
+    "The Ubian website controls its own language. Ukrainian uses the Slovak page; local controls stay translated.",
   rememberSession: "Remember session",
   saveCredentials: "Save login credentials",
-  storagePreparation: "Storage protected by device authentication is in preparation, using synthetic data only. Saving and reusing real login credentials is unavailable.",
+  storagePreparation:
+    "Storage protected by device authentication is in preparation, using synthetic data only. Saving and reusing real login credentials is unavailable.",
   unavailableOff: "Off · not available yet",
-  systemAppearanceError: "The app appearance is set; Android system bar colors could not be updated.",
-
+  systemAppearanceError:
+    "The app appearance is set; Android system bar colors could not be updated.",
 };
-
-
 
 const uk: Messages = {
   unofficial: "Неофіційний клієнт Ubian. Не пов’язаний з оператором Ubian.",
@@ -243,40 +249,55 @@ const uk: Messages = {
   signIn: "Вхід",
   account: "Обліковий запис",
   settings: "Налаштування",
-  journeyDescription: "Пошук сполучень і розклади відправлень у застосунку готуються.",
+  journeyDescription:
+    "Пошук сполучень і розклади відправлень у застосунку готуються.",
   openJourneys: "Відкрити розклади руху",
-  returnHint: "Кнопка «Закрити» повертає до застосунку. Кнопка «Назад» переглядає історію сайту.",
+  returnHint:
+    "Кнопка «Закрити» повертає до застосунку. Кнопка «Назад» переглядає історію сайту.",
   accountTitle: "Обліковий запис Ubian",
-  accountDescription: "Вхід відбувається на сайті Ubian. Застосунок поки що не може перевірити стан входу.",
+  accountDescription:
+    "Вхід відбувається на сайті Ubian. Застосунок поки що не може перевірити стан входу.",
   openLogin: "Відкрити вхід до Ubian",
-  credentials: "Збереження та повторне використання пароля ще недоступні. Вводьте пароль лише на перевіреній сторінці Ubian.",
-  session: "Запам’ятовування сеансу вимкнено. Застосунок запитує очищення даних сайту перед відкриттям і після закриття. Повне видалення ще не перевірено. WebView може записувати дані на диск.",
-  social: "Вхід через соціальні мережі й оплата потребують додаткової перевірки. Зовнішній браузер може не використовувати сеанс застосунку.",
+  credentials:
+    "Збереження та повторне використання пароля ще недоступні. Вводьте пароль лише на перевіреній сторінці Ubian.",
+  session:
+    "Запам’ятовування сеансу вимкнено. Застосунок запитує очищення даних сайту перед відкриттям і після закриття. Повне видалення ще не перевірено. WebView може записувати дані на диск.",
+  social:
+    "Вхід через соціальні мережі й оплата потребують додаткової перевірки. Зовнішній браузер може не використовувати сеанс застосунку.",
   privacy: "Приватність",
-  privacyDescription: "Сторонні файли cookie вимкнено. Застосунок не додає аналітику чи рекламу.",
-  rulesPending: "Правила блокування необов’язкового стеження очікують перевірки мережевих запитів. Правил блокування аналітики поки що немає.",
-  limits: "Ubian і необхідні постачальники отримують ваші запити та IP-адресу. Захист не поширюється на зовнішній браузер.",
+  privacyDescription:
+    "Сторонні файли cookie вимкнено. Застосунок не додає аналітику чи рекламу.",
+  rulesPending:
+    "Правила блокування необов’язкового стеження очікують перевірки мережевих запитів. Правил блокування аналітики поки що немає.",
+  limits:
+    "Ubian і необхідні постачальники отримують ваші запити та IP-адресу. Захист не поширюється на зовнішній браузер.",
   language: "Мова застосунку",
   status: "Стан застосунку",
   spike: "Версія для розробки · інтеграція з Android очікує перевірки",
-  browserPreview: "Попередній перегляд локального інтерфейсу. Перегляд сайту й перевірка Keystore потребують застосунку Android.",
+  browserPreview:
+    "Попередній перегляд локального інтерфейсу. Перегляд сайту й перевірка Keystore потребують застосунку Android.",
   nativeUnavailable: "Ця функція потребує застосунку Android.",
-  genericError: "Не вдалося виконати дію. Перевірте з’єднання або стан застосунку.",
+  genericError:
+    "Не вдалося виконати дію. Перевірте з’єднання або стан застосунку.",
   busy: "Триває обробка…",
   opened: "Сайт Ubian відкрито.",
   refresh: "Оновити стан",
   diagnostic: "Перевірка Android Keystore",
-  diagnosticDescription: "Використовує лише тестові дані, перевіряє шифрування, а потім видаляє тестовий ключ і файл. Не перевіряє біометрію чи збережений вхід.",
+  diagnosticDescription:
+    "Використовує лише тестові дані, перевіряє шифрування, а потім видаляє тестовий ключ і файл. Не перевіряє біометрію чи збережений вхід.",
   runProbe: "Перевірити шифрування",
-  probePassed: "Шифрування, відхилення змінених даних, унікальні nonce та відхилення відсутнього ключа перевірено успішно.",
-  probeFailed: "Перевірка шифрування не вдалася. Збереження облікових даних недоступне.",
+  probePassed:
+    "Шифрування, відхилення змінених даних, унікальні nonce та відхилення відсутнього ключа перевірено успішно.",
+  probeFailed:
+    "Перевірка шифрування не вдалася. Збереження облікових даних недоступне.",
   hardware: "Ключ захищено апаратно",
   yes: "Так",
   no: "Ні",
   help: "Допомога Ubian",
   verifiedRules: "Перевірені правила блокування",
   state: "Стан перегляду сайту",
-  cleanupFailed: "Не вдалося очистити дані сайту. Відкриття заблоковано; закрийте та знову запустіть застосунок.",
+  cleanupFailed:
+    "Не вдалося очистити дані сайту. Відкриття заблоковано; закрийте та знову запустіть застосунок.",
   closed: "Закрито",
   opening: "Відкривається",
   open: "Відкрито",
@@ -305,7 +326,8 @@ const uk: Messages = {
   invalidColor: "Введіть колір у форматі #RRGGBB, наприклад #008837.",
   resetAppearance: "Відновити стандартний вигляд",
   preferencesSaved: "Зміни автоматично зберігаються на цьому пристрої.",
-  preferencesUnsaved: "Вигляд змінено, але налаштування не вдалося зберегти на пристрої.",
+  preferencesUnsaved:
+    "Вигляд змінено, але налаштування не вдалося зберегти на пристрої.",
   green: "Зелений",
   teal: "Бірюзовий",
   blue: "Синій",
@@ -314,40 +336,56 @@ const uk: Messages = {
   orange: "Помаранчевий",
   localStatus: "Доступно в застосунку Android",
   timetableIncomplete: "Розклади руху в застосунку ще недоступні",
-  timetableBlocked: "Доступ цього застосунку до джерела розкладів ще не підтверджено. Пошук сполучень, відправлення та докладні відомості поки що недоступні.",
-  noJourneyHistory: "Пошукові запити не зберігаються. Обліковий запис не потрібен.",
+  timetableBlocked:
+    "Доступ цього застосунку до джерела розкладів ще не підтверджено. Пошук сполучень, відправлення та докладні відомості поки що недоступні.",
+  noJourneyHistory:
+    "Пошукові запити не зберігаються. Обліковий запис не потрібен.",
   stopQuery: "Назва зупинки",
   lookupStop: "Знайти зупинку",
   queryInvalid: "Введіть від 2 до 100 символів без керівних символів.",
   cancel: "Скасувати",
   cancelled: "Пошук скасовано.",
-  offline: "Немає з’єднання з мережею. Перевірте підключення та спробуйте ще раз.",
+  offline:
+    "Немає з’єднання з мережею. Перевірте підключення та спробуйте ще раз.",
   timeout: "Час очікування пошуку минув. Спробуйте пізніше.",
   rateLimited: "Забагато запитів. Зачекайте та спробуйте ще раз.",
   providerChanged: "Формат даних постачальника змінився. Пошук недоступний.",
   noStops: "Зупинок не знайдено.",
   searching: "Пошук зупинок…",
-  providerLanguage: "Мову сайту Ubian визначає постачальник. Для української використовується словацька сторінка; локальні елементи керування залишаються перекладеними.",
+  providerLanguage:
+    "Мову сайту Ubian визначає постачальник. Для української використовується словацька сторінка; локальні елементи керування залишаються перекладеними.",
   rememberSession: "Запам’ятати сеанс",
   saveCredentials: "Зберегти дані для входу",
-  storagePreparation: "Готується сховище із захистом через автентифікацію пристрою, лише на синтетичних даних. Збереження та повторне використання справжніх даних для входу недоступні.",
+  storagePreparation:
+    "Готується сховище із захистом через автентифікацію пристрою, лише на синтетичних даних. Збереження та повторне використання справжніх даних для входу недоступні.",
   unavailableOff: "Вимкнено · ще недоступно",
-  systemAppearanceError: "Вигляд застосунку налаштовано; не вдалося оновити кольори системних панелей Android.",
+  systemAppearanceError:
+    "Вигляд застосунку налаштовано; не вдалося оновити кольори системних панелей Android.",
 };
 
 export const messages: Record<Language, Messages> = { sk, en, uk };
 
-export const locales: Record<Language, string> = { sk: "sk-SK", en: "en-GB", uk: "uk-UA" };
+export const locales: Record<Language, string> = {
+  sk: "sk-SK",
+  en: "en-GB",
+  uk: "uk-UA",
+};
 export const TIMETABLE_TIME_ZONE = "Europe/Bratislava";
 
 export function formatTimetableTime(instant: Date, language: Language): string {
   return new Intl.DateTimeFormat(locales[language], {
-    timeZone: TIMETABLE_TIME_ZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    timeZone: TIMETABLE_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
   }).format(instant);
 }
 
 export function formatTimetableDate(instant: Date, language: Language): string {
   return new Intl.DateTimeFormat(locales[language], {
-    timeZone: TIMETABLE_TIME_ZONE, day: "numeric", month: "long", year: "numeric",
+    timeZone: TIMETABLE_TIME_ZONE,
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   }).format(instant);
 }

@@ -46,10 +46,15 @@ export function readPreferences(storage?: PreferenceStorage): Preferences {
         ? value.accent.toLowerCase()
         : DEFAULT_ACCENT,
       theme:
-        value.theme === "light" || value.theme === "dark" || value.theme === "black"
+        value.theme === "light" ||
+        value.theme === "dark" ||
+        value.theme === "black"
           ? value.theme
           : "system",
-      language: value.language === "en" || value.language === "uk" ? value.language : "sk",
+      language:
+        value.language === "en" || value.language === "uk"
+          ? value.language
+          : "sk",
     };
   } catch {
     return { ...DEFAULT_PREFERENCES };

@@ -70,11 +70,17 @@ internal class AndroidVaultKeys(private val context: Context, private val alias:
     override fun encryptCipher(): Cipher = cipher(Cipher.ENCRYPT_MODE)
     override fun decryptCipher(nonce: ByteArray): Cipher = cipher(Cipher.DECRYPT_MODE, nonce)
     override fun delete() { keys.deleteEntry(alias) }
-    override fun failure(error: Throwable): VaultException = when (error) {
-        is VaultException -> error
-        is KeyPermanentlyInvalidatedException, is UnrecoverableKeyException -> VaultException(VaultFailure.KEY_INVALIDATED)
-        is UserNotAuthenticatedException -> VaultException(VaultFailure.AUTHENTICATION_UNAVAILABLE)
-        else -> VaultException(VaultFailure.IO_FAILURE)
+    override fun failure(error: Throwable): VaultException {
+        var current: Throwable? = error
+        repeat(8) {
+            when (val cause = current) {
+                is VaultException -> return cause
+                is KeyPermanentlyInvalidatedException, is UnrecoverableKeyException -> return VaultException(VaultFailure.KEY_INVALIDATED)
+                is UserNotAuthenticatedException -> return VaultException(VaultFailure.AUTHENTICATION_UNAVAILABLE)
+            }
+            current = current?.cause
+        }
+        return VaultException(VaultFailure.IO_FAILURE)
     }
 }
 
@@ -88,7 +94,9 @@ internal class AndroidVaultFiles(context: Context, name: String) : VaultFiles {
             result
         }
     } catch (_: java.io.FileNotFoundException) {
-        if (file.baseFile.exists()) throw VaultException(VaultFailure.IO_FAILURE)
+        if (file.baseFile.exists() || File(file.baseFile.path + ".bak").exists() || File(file.baseFile.path + ".new").exists()) {
+            throw VaultException(VaultFailure.IO_FAILURE)
+        }
         null
     }
 

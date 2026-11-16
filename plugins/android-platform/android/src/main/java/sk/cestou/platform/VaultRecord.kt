@@ -84,6 +84,7 @@ internal class SyntheticVault(
     private var generation = 0L
     private var pending: ((Result<Unit>) -> Unit)? = null
     private var cancelPrompt: (() -> Unit)? = null
+    private var deleting = false
 
     @Synchronized fun availability(): VaultMetadata = try {
         val record = files.read()
@@ -106,7 +107,7 @@ internal class SyntheticVault(
     fun unlockAndVerifySynthetic(complete: (Result<Unit>) -> Unit) = start(false, complete)
 
     @Synchronized private fun start(save: Boolean, complete: (Result<Unit>) -> Unit) {
-        if (pending != null) { complete(Result.failure(VaultException(VaultFailure.BUSY))); return }
+        if (deleting || pending != null) { deliver(complete, Result.failure(VaultException(VaultFailure.BUSY))); return }
         try {
             if (!keys.authenticationAvailable()) throw VaultException(VaultFailure.AUTHENTICATION_UNAVAILABLE)
             val previous = files.read()
@@ -129,10 +130,10 @@ internal class SyntheticVault(
                         val synthetic = "Cestou synthetic account storage v1".toByteArray(Charsets.UTF_8)
                         try {
                             if (save) {
-                                val sealed = VaultRecord.seal(authorized, synthetic)
-                                if (previous != null && VaultRecord.nonce(previous).contentEquals(VaultRecord.nonce(sealed))) {
+                                if (previous != null && VaultRecord.nonce(previous).contentEquals(authorized.iv)) {
                                     throw VaultException(VaultFailure.NONCE_REUSED)
                                 }
+                                val sealed = VaultRecord.seal(authorized, synthetic)
                                 files.write(sealed)
                             } else if (!VaultRecord.verify(authorized, previous!!, synthetic)) {
                                 throw VaultException(VaultFailure.TAMPERED)
@@ -142,14 +143,14 @@ internal class SyntheticVault(
                     val callback = pending
                     pending = null
                     cancelPrompt = null
-                    callback?.invoke(outcome)
+                    deliver(callback, outcome)
                 }
             }
             if (pending != null && ticket == generation) cancelPrompt = cancel
         } catch (error: Exception) {
             pending = null
             cancelPrompt = null
-            complete(Result.failure(safeFailure(error)))
+            deliver(complete, Result.failure(safeFailure(error)))
         }
     }
 
@@ -165,18 +166,26 @@ internal class SyntheticVault(
     }
 
     @Synchronized fun deleteSynthetic(): Result<Unit> {
-        cancelUnlock()
-        // Key deletion first makes any stranded ciphertext unusable. Attempt
-        // both removals even if one fails, and report failure for a safe retry.
-        val keyResult = runCatching { keys.delete() }
-        val fileResult = runCatching { files.delete() }
-        return (keyResult.exceptionOrNull() ?: fileResult.exceptionOrNull())?.let {
-            Result.failure(safeFailure(it))
-        } ?: Result.success(Unit)
+        if (deleting) return Result.failure(VaultException(VaultFailure.BUSY))
+        deleting = true
+        try {
+            cancelUnlock()
+            // Key deletion first makes any stranded ciphertext unusable. Attempt
+            // both removals even if one fails, and report failure for a safe retry.
+            val keyResult = runCatching { keys.delete() }
+            val fileResult = runCatching { files.delete() }
+            return (keyResult.exceptionOrNull() ?: fileResult.exceptionOrNull())?.let {
+                Result.failure(safeFailure(it))
+            } ?: Result.success(Unit)
+        } finally { deleting = false }
     }
 
     private fun safeFailure(error: Throwable): VaultException =
         keys.failure(error)
+
+    private fun deliver(callback: ((Result<Unit>) -> Unit)?, result: Result<Unit>) {
+        try { callback?.invoke(result) } catch (_: Exception) { /* State is already settled. */ }
+    }
 
     private fun Result<Unit>.mapFailure(): Result<Unit> = fold(
         { Result.success(Unit) }, { Result.failure(safeFailure(it)) },

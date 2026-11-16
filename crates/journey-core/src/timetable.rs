@@ -79,9 +79,9 @@ pub fn parse_stops(bytes: &[u8]) -> Result<Vec<Stop>, TimetableError> {
     response
         .results
         .into_iter()
-        .filter(|item| item.kind == "stop")
         .map(|item| {
-            if item.id == 0
+            if item.kind != "stop"
+                || item.id == 0
                 || item.name.trim().is_empty()
                 || item.name.chars().count() > 256
                 || item.name.chars().any(char::is_control)
@@ -123,6 +123,7 @@ mod tests {
             r#"{"status":"ok","results":[]}"#,
             r#"{"status":"ok","inputPhrase":"xx","results":[{"type":"stop","id":0,"name":"X"}]}"#,
             r#"{"status":"ok","inputPhrase":"xx","results":[{"type":"stop","id":1,"name":""}]}"#,
+            r#"{"status":"ok","inputPhrase":"xx","results":[{"type":"station","id":1,"name":"Changed schema"}]}"#,
             "<html>Challenge</html>",
         ] {
             assert_eq!(

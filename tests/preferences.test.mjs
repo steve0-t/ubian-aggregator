@@ -144,7 +144,13 @@ test("custom accents keep buttons and highlighted text readable in every palette
     ]) {
       assertReadable(tokens["--accent-dark-text"], background);
     }
-    for (const background of ["#000000", "#0d0d0d", "#141414", "#1b1b1b", tokens["--accent-black-soft"]]) {
+    for (const background of [
+      "#000000",
+      "#0d0d0d",
+      "#141414",
+      "#1b1b1b",
+      tokens["--accent-black-soft"],
+    ]) {
       assertReadable(tokens["--accent-black-text"], background);
     }
   }
