@@ -1,53 +1,115 @@
-# Authentication and storage preparation
+# Native account authentication and storage
 
-There is no authenticated-state coordinator yet. Opening the fixed [Ubian login page](https://www.ubian.sk/login) is a restricted website entry point, not a verified login integration. The local interface does not claim a signed-in account, capture website passwords, fill a form, extract cookies or replay transactions. Guest timetable preparation is independent of account and vault state.
+Updated **2026-11-18**. Native email/password sign-in, account identity/status,
+refresh, logout and explicit saved-session actions are implemented. The authorized
+host check verified successful sign-in, profile refresh, restoration, server logout
+and rejection of the pre-logout session. Android biometric/storage runtime checks
+remain unrun. See [account verification](account-verification.md).
 
-Public inspection showed email/password controls, a provider remember option, social entry points, registration and recovery. No authorized account was supplied and no login attempt was made. Form/CSRF behavior, cookie attributes, authenticated signals, expiry, server logout and supported session transfer still need verification. Social authentication, checkout returns and browser session transfer remain deferred. No OAuth client ID, callback or domain ownership has been invented.
+## Native account flow
 
-## Implemented synthetic foundation
+The bundled Svelte form sends email/password once to a dedicated typed Rust
+command and clears its controls before awaiting IPC. Rust first reads the observed
+`https://www.ubian.sk/login` form, preserves any bounded hidden fields, and submits
+its observed URL-encoded `email` and `password` fields to `/login`. There is no
+claimed public JSON authentication API. Google/Facebook integration remains
+outside this native flow; registration and recovery retain the restricted
+provider login entry point.
 
-`crates/journey-core/src/vault.rs` defines internal availability, explicit synthetic save/update, unlock/use and deletion contracts with typed status/failure values. Kotlin implements the synthetic state machine, versioned authenticated record format, platform key/file adapters and an initial biometric authorization adapter. Synthetic unlock verifies a fixed test value entirely in native memory and returns only success/failure. There is no general secret-read API or credential input field.
+The observed successful POST redirects to `/eshop` with a query. Rust validates
+that this is an exact-origin, bounded success-candidate redirect, discards its
+query and does not fetch the shop or replay an account/card action. It independently
+reads `/user/profile` and requires the verified `form#js-profile-form` schema.
+The identity comes from `#profile-login`, and must match the submitted/restored
+login identity. Contact email is a separate field and cannot replace that check.
+Only login email and the supplied display name reach the native account summary.
+HTTP 200, a cookie or absence of a login form alone cannot prove authentication.
 
-The local-only `vault_status` command returns availability, whether a synthetic record exists, and `realCredentialsEnabled: false`. Rust forces that last value to false. The process-owned `AccountVault` instance intentionally has no usable authorizer for save/use; real credential operations are not frontend commands. Controlled native tests can construct the internal biometric adapter. Provider pages have no bridge and cannot invoke any vault operation.
+The actual rejected-login response includes an inline `ubian.wrongPassword(...)`
+call whose arguments echo submitted credentials. The parser recognizes only the
+fixed marker. It never executes, displays, logs or saves the provider script or
+its arguments. Authenticated HTML never enters the privileged frontend.
 
-The key design requires per-operation authorization for both encryption and decryption. On API 30+ it requests strong biometrics and binds the key to that authorization class with no validity window. API 29 uses a per-use key and CryptoObject prompt; its preliminary capability query does not distinguish weak from strong biometrics, so a positive availability result is provisional and does not prove that key authorization will succeed. API 26–28 and unavailable/unconfigured authentication decline persistence. Device-credential fallback remains unimplemented. Manual provider login remains independent of this scaffold.
+## Session ownership and cached data
 
-The synthetic engine handles canceled/unavailable authentication, busy operations, missing/invalidated keys, tampering, unknown versions, malformed records, nonce reuse and I/O failure with nonsensitive typed failures. Deletion cancels the prompt, advances its generation, attempts key removal before ciphertext removal, and rejects late unlock callbacks. These are implementation boundaries, not device-verified guarantees. See [security](security.md) for record layout, migrations and verification scope.
+The Rust account client owns an independent bounded cookie jar with provider
+scope, Secure/HttpOnly/SameSite flags, paths and expiry preserved. It shares no
+cookies or credentials with the anonymous timetable client or provider WebView.
+Account and guest networking remain independent. Opening provider pages does not
+transfer the native session; those pages may require their own sign-in.
 
-## Session ownership and remember options
+The frontend receives typed states (`signed_out`, `signing_in`, `signed_in`,
+`cached`, `expired`), the small profile summary, its last verification time and
+storage metadata. Cookies and saved-session plaintext have no frontend read
+command. A refreshed protected account page establishes `signed_in`; cached
+identity alone does not. Offline/timeout restoration can show the previously
+saved profile as `cached`, with its original timestamp. Rejected/expired sessions
+clear the active profile and cookie jar. No balance, card, transaction or purchase
+integration is claimed by this profile-only flow.
 
-Provider sessions belong to the restricted Android WebView. Rust has no HTTP client or shared cookie jar, and browser/WebView sessions are not assumed to transfer. The app offers separate, disabled **Remember session** and **Save login credentials** controls; both start off. Neither can currently enable persistence or reuse.
+## Explicit encrypted session persistence
 
-Remember session would retain provider-issued WebView state across launches, subject to a verified cleanup and backup design. Save login credentials would persist an explicit user-provided Ubian login in an authentication-bound encrypted record, then release it only for a separately verified sign-in action. One option must not imply the other. The wrapper does not intercept the provider's own remember checkbox, so its behavior also needs device inspection.
+Sign-in starts in memory. **Save session on this device** explicitly authorizes
+writing a provider-issued session and the profile cache, without the password.
+**Unlock saved session** requires a fresh supported strong-biometric operation,
+then revalidates the session online when available. Persistence is unavailable
+on unsupported/unconfigured devices and desktop; manual memory-only sign-in
+continues to work.
 
-Encrypted application records do not establish that WebView cookies, caches, IndexedDB, local storage or browser-managed forms are encrypted with the vault key. Current normal open/close requests cleanup, and a new provider opening requests cleanup again after process death. Cookie removal has a completion callback; WebStorage deletion does not prove that every artifact was removed. The current code is not a complete logout implementation.
+The new record is separate from the earlier synthetic vault. It uses AES-256-GCM
+with a platform-generated 12-byte nonce, authenticated magic/version/purpose and
+a 128-bit tag. A non-exportable Android Keystore key requires per-operation
+biometric authorization. API 30+ requests strong biometrics; API 29's preliminary
+capability check remains provisional. API 26–28 and unavailable biometrics decline
+persistence; there is no plaintext or device-credential fallback.
 
-## Required cleanup coordinator
+- Alias: `cestou.native-session.v1`.
+- File: `noBackupFilesDir/native-session.v1.bin`, atomic replacement, mode 0600.
+- Format: `CSES`, version 1, purpose 2; bounded at 256 KiB plaintext. Rust accepts
+  at most 128 KiB of versioned session/cache data.
+- Snapshot includes exact source, saved/verified timestamps, typed profile and
+  provider cookies; the password is absent. Restoring snapshots older than 30
+  days is rejected, and provider expiry still applies. Rejected ciphertext stays
+  deletable; physical retention lasts until Logout/Forget removes it.
+- Unsupported versions, corruption/tampering, missing/invalidated keys and I/O
+  failures return local codes. A missing key never silently regenerates a usable
+  session for existing ciphertext.
 
-The following lifecycle is specified for later implementation; it is not an available user flow yet.
+Saved sessions are excluded from Android backup/transfer with both existing rule
+formats. The earlier `SyntheticVault` and public Keystore probe remain separate
+namespaces; their status does not enable password saving. Real passwords are not
+persisted by this implementation.
 
-1. Enter a serialized cleaning state and increment an account/session generation before accepting further work. Block new authenticated requests, provider navigation and vault saves/uses; cancel active requests, pending unlocks and any credential-delivery operation. Every callback must check its captured generation before updating UI, opening a view or writing storage.
-2. Stop ordinary provider work and clear account UI/read caches. If online and a provider logout mechanism has been verified, attempt it once using the owned session before destroying the provider view and session material. Then destroy the view. Distinguish confirmed server revocation from local logout; an offline or failed server call must not prevent local cleanup or trigger a replay of state-changing work.
-3. Complete cookie deletion/flush and all verified website storage, cache and service-worker cleanup. Wait for asynchronous completion and verify unsupported surfaces explicitly. The existing `ProviderSession` callback gate is only part of this requirement. Fail closed for account reopening/switching when cleanup cannot be established.
-4. Apply the requested local deletion scope. Cancel native vault work and revoke its generation before removing keys/ciphertext; attempt all cleanup steps even if one fails. Return only nonsensitive, retryable status. Do not allow a late save, cookie callback or request to recreate deleted state.
-5. Release the cleanup gate only after all required local operations complete. Cold-start recovery must finish any interrupted cleanup before opening another provider session. A restored record without its original key requires fresh sign-in; never silently regenerate a key and treat the old account as usable.
+## Cancellation, lifecycle and cleanup
 
-| Action                | Required local scope                                                                                                                   | Saved login policy                                                                 | Server/provider scope                                                           |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Logout                | Cancel authenticated work/unlocks; clear local session, account UI/caches and provider website state                                   | Offer an explicit retain/remove choice; retain only by user choice and keep locked | Attempt verified logout when possible; report unconfirmed revocation separately |
-| Forget account        | Logout cleanup plus all account records, session material and associated aliases; block account switch until website cleanup completes | Always remove                                                                      | Does not delete the Ubian account or provider-held data                         |
-| Delete all local data | Forget account plus app preferences, favorites, recents and diagnostics; stop preference writers before clearing                       | Always remove; clean synthetic/public test artifacts too                           | Does not delete the Ubian account or provider-held data                         |
+Rust serializes account mutations. Request IDs, bounded cancellation tombstones
+and epochs fence superseded callbacks, including cancellation after authentication
+commits while status metadata is being read. Native storage has a process-owned
+coordinator, Activity leases and an independent epoch floor to reject delayed
+old registrations. Save/Unlock prompts time out; bridge calls also have deadlines.
+Cancellation or destruction revokes pending prompts and prevents late writes.
 
-No local favorites, recent searches, account cache or diagnostic history is currently persisted by the bundled UI. The existing preference writer must be coordinated before an eventual Delete all local data flow, so reactive saves do not recreate settings during cleanup.
+Logout clears local account state regardless of network success, attempts the
+observed `/logout` once and verifies revocation using a separate copy of the old
+session cookies against the protected profile. The observed expired-session path
+is `/user/profile` → `/login_form` → `/login`. If revocation cannot be confirmed,
+local logout still completes and the UI reports that limit. Logout removes the
+saved encrypted session. Forget removes the native account/session/cache locally
+without claiming server logout or provider-account deletion. Cleanup continues
+after UI navigation/cancellation and completes before another account operation.
+Deletion errors explicitly say saved data may remain and leave a retry available.
 
-## Gates before real account storage
+The bundled account view requests screenshot/recent-app protection and disables
+WebView form saving/autofill for the local credential form. Native prompt and
+account-view flag ownership is coordinated. Actual device behavior, OEM backup,
+biometric enrollment/lock changes, Activity recreation and crash durability remain
+verification work; host substitutes and APK compilation do not establish them.
 
-Real saving and reuse must stay unavailable until all of these pass:
+## Restricted website sessions and other account features
 
-- Verify authenticated signals, expiry, invalid credentials, cookie/CSRF behavior, logout and account switch with an authorized test account.
-- Prove authentication-bound key use on devices: save/update/unlock prompts, canceled prompts, lock/enrollment changes, missing/invalidated keys, tampering, crash/interrupted writes, backup/transfer/restore, deletion and concurrent cleanup.
-- Complete website session cleanup independently of vault encryption, including process death and in-flight request races.
-- Implement an explicit local save/update action, clear input state promptly, and prove fixed origin/form/navigation-checked credential delivery. Never scrape provider password controls or expose arbitrary scripts/plaintext reads.
-- Inspect known synthetic secrets in app files, logs, events, URLs and diagnostics. JVM memory cannot be promised immediate complete erasure.
-
-No Android device is currently connected. Host fixtures and JVM substitute tests support preparation only; they do not establish biometric authorization, safe credential reuse or account-storage completion.
+The separate provider WebView still requests cookie/cache/storage cleanup on
+open/close. Cookie deletion has a completion callback; complete WebStorage and
+service-worker cleanup remains an unresolved device check. Native encrypted
+session storage does not encrypt or share WebView-managed state. Website session
+remembering, saved-password delivery, profile edits, cards, balances, payments and
+social-login session transfer remain separate, unverified work.

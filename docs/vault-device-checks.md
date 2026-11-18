@@ -30,3 +30,21 @@ Use a unique alias `cestou.account-preparation.test.<random>` and a unique file 
 - Verify logout, Forget account and Delete all local data only after the provider session coordinator is implemented. Cancellation/generation fencing, navigation shutdown and asynchronous website cleanup must complete before another account/navigation can recreate state. Local cleanup must finish even when remote logout cannot be confirmed. These account flows remain gated.
 
 Passing these checks would verify the synthetic preparation on the recorded device. Enabling real account storage still requires verified provider authentication/session cleanup, safe fixed-origin credential delivery, explicit user saving, and the remaining Android architecture gates.
+
+## Native saved-session follow-up — 2026-11-18
+
+The real-session vault is now separate from the synthetic foundation. Run
+`RealSessionVaultTest` instrumentation and the native Account flow on an actual
+device: explicit Save/Unlock with strong-biometric CryptoObjects, canceled/failed
+prompts, Activity/process recreation, enrollment/lock changes, key loss, corrupt
+and unknown-version records, atomic file failures, interrupted deletion and
+backup/transfer/restore. Check queued/late callbacks and cold-start cleanup;
+confirm old-Activity lifecycle callbacks do not cancel a replacement lease.
+
+Inspect screenshot/recent-app protection while typing and while a biometric
+prompt is active; confirm local WebView form saving/autofill is disabled. Verify
+Save/Unlock failure leaves memory-only sign-in usable. Check cached/offline profile
+labels and expiry clearing, and confirm Logout/Forget removes both the native
+session record and key even after navigation or partial failure. Host tests with
+substitute keys and compiled instrumentation do not establish these properties.
+See [account verification](account-verification.md) for the host live evidence.

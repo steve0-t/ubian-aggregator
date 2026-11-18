@@ -1,6 +1,6 @@
 # Android setup and build
 
-**An ARM64 debug APK was built on 2026-11-16.** Signature verification and packaged asset/resource checks passed. Device behavior, other ABIs, release builds and fresh-checkout reproducibility remain unverified.
+**The current native-timetable/account ARM64 debug APK was built on 2026-11-18.** Signature, ZIP alignment and packaged native/frontend assets passed verification. See [the current artifact and SHA-256](account-verification.md#current-arm64-debug-apk). Device behavior, biometric persistence, other ABIs, release builds and fresh-checkout reproducibility remain unverified. The November 16 and Revision 1/2 records below are historical.
 
 ## Selected and observed tooling
 
