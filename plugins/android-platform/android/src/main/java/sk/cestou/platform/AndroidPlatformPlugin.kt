@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.view.View
+import android.webkit.WebView
+import androidx.appcompat.app.AppCompatActivity
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -25,12 +27,44 @@ class AppearanceArgs {
     lateinit var theme: String
 }
 
+@InvokeArg
+class SessionStoreArgs {
+    lateinit var snapshot: String
+    lateinit var language: String
+    var generation: Long = -1
+}
+
+@InvokeArg
+class SessionUnlockArgs {
+    lateinit var language: String
+    var generation: Long = -1
+}
+
+@InvokeArg
+class SessionGenerationArgs { var generation: Long = -1 }
+
+@InvokeArg
+class AccountProtectionArgs { var enabled: Boolean = false }
+
 @TauriPlugin
-class AndroidPlatformPlugin(private val activity: Activity) : Plugin(activity) {
+class AndroidPlatformPlugin(initialActivity: Activity) : Plugin(initialActivity) {
+    @Volatile private var activity: Activity = initialActivity
     private val probeRunning = AtomicBoolean(false)
     private val worker = Executors.newSingleThreadExecutor()
+    @Volatile private var sessionVault = NativeSessionStorage.attach(initialActivity)
     private val policy by lazy {
         RequestPolicy.parse(activity.assets.open("network-policy.json").bufferedReader().use { it.readText() })
+    }
+
+    @Suppress("DEPRECATION")
+    override fun load(webView: WebView) {
+        super.load(webView)
+        // The bundled login form follows the same persistence policy as the
+        // provider view. Remembering a native session is an explicit vault action.
+        webView.settings.saveFormData = false
+        if (Build.VERSION.SDK_INT >= 26) {
+            webView.importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+        }
     }
 
     @Command
@@ -113,6 +147,121 @@ class AndroidPlatformPlugin(private val activity: Activity) : Plugin(activity) {
                 })
             } catch (_: Exception) { invoke.reject("secure_storage_unavailable") }
         }
+    }
+
+    // These mobile bridge operations are called internally by the Rust account
+    // coordinator. No frontend command exposes a raw snapshot or secret read.
+    @Command
+    fun sessionStorageStatusNative(invoke: Invoke) {
+        worker.execute {
+            try {
+                val status = sessionVault.status()
+                invoke.resolve(JSObject().apply {
+                    put("availability", status.availability)
+                    put("recordPresent", status.recordPresent)
+                })
+            } catch (error: Exception) { rejectSession(invoke, error) }
+        }
+    }
+
+    @Command
+    fun sessionStoreNative(invoke: Invoke) {
+        worker.execute {
+            var bytes: ByteArray? = null
+            try {
+                val args = invoke.parseArgs(SessionStoreArgs::class.java)
+                val language = AppLanguage.parse(args.language) ?: throw VaultException(VaultFailure.INVALID_RECORD)
+                if (args.snapshot.length > SessionRecord.MAX_PLAINTEXT) throw VaultException(VaultFailure.INVALID_RECORD)
+                org.json.JSONObject(args.snapshot) // Only an opaque JSON object from Rust is accepted.
+                bytes = args.snapshot.toByteArray(Charsets.UTF_8)
+                args.snapshot = ""
+                val consumed = bytes
+                bytes = null
+                sessionVault.store(consumed, language, args.generation) { result ->
+                    result.fold({ invoke.resolve() }, { rejectSession(invoke, it) })
+                }
+            } catch (error: Exception) { rejectSession(invoke, error) }
+            finally { bytes?.fill(0) }
+        }
+    }
+
+    @Command
+    fun sessionRestoreNative(invoke: Invoke) {
+        worker.execute {
+            try {
+                val args = invoke.parseArgs(SessionUnlockArgs::class.java)
+                val language = AppLanguage.parse(args.language) ?: throw VaultException(VaultFailure.INVALID_RECORD)
+                sessionVault.restore(language, args.generation) { result ->
+                    result.fold({ bytes ->
+                        try {
+                            val snapshot = Charsets.UTF_8.newDecoder()
+                                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                                .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT)
+                                .decode(java.nio.ByteBuffer.wrap(bytes)).toString()
+                            org.json.JSONObject(snapshot)
+                            invoke.resolve(JSObject().apply { put("snapshot", snapshot) })
+                        } catch (_: Exception) { invoke.reject("invalid_record") }
+                        finally { bytes.fill(0) }
+                    }, { rejectSession(invoke, it) })
+                }
+            } catch (error: Exception) { rejectSession(invoke, error) }
+        }
+    }
+
+    @Command
+    fun sessionDeleteNative(invoke: Invoke) {
+        worker.execute {
+            try {
+                val args = invoke.parseArgs(SessionGenerationArgs::class.java)
+                sessionVault.delete(args.generation).fold({ invoke.resolve() }, { rejectSession(invoke, it) })
+            }
+            catch (error: Exception) { rejectSession(invoke, error) }
+        }
+    }
+
+    @Command
+    fun sessionCancelNative(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(SessionGenerationArgs::class.java)
+            sessionVault.cancel(args.generation)
+            invoke.resolve()
+        } catch (error: Exception) { rejectSession(invoke, error) }
+    }
+
+    @Command
+    fun setAccountProtectionNative(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(AccountProtectionArgs::class.java)
+            activity.runOnUiThread {
+                try { AccountProtection.account(activity, args.enabled); invoke.resolve() }
+                catch (_: Exception) { invoke.reject("io_failure") }
+            }
+        } catch (_: Exception) { invoke.reject("invalid_input") }
+    }
+
+    override fun onResume(activity: AppCompatActivity) {
+        if (this.activity !== activity) {
+            this.activity = activity
+            sessionVault = NativeSessionStorage.attach(activity)
+        }
+        sessionVault.resume()
+        super.onResume(activity)
+    }
+
+    override fun onStop(activity: AppCompatActivity) {
+        if (this.activity === activity) sessionVault.pause()
+        super.onStop(activity)
+    }
+
+    override fun onDestroy(activity: AppCompatActivity) {
+        if (this.activity === activity) sessionVault.pause()
+        super.onDestroy(activity)
+    }
+
+    private fun rejectSession(invoke: Invoke, error: Throwable) {
+        // Never attach the exception: Tauri's overload would log it and might
+        // expose native data. Java/JVM String copies cannot be fully erased.
+        invoke.reject((error as? VaultException)?.failure?.name?.lowercase() ?: "io_failure")
     }
 
     @Command

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+mod account;
 #[cfg(target_os = "android")]
 use tauri::plugin::PluginHandle;
 use tauri::{
@@ -6,7 +7,10 @@ use tauri::{
     Manager, Runtime, Webview,
 };
 
-use journey_core::timetable::{self, Language, Stop, StopQuery, TimetableError};
+use journey_core::timetable::{
+    ConnectionDetail, Departure, DepartureQuery, DetailQuery, Journey, JourneyQuery, Language,
+    Stop, StopQuery, TimetableClient, TimetableError,
+};
 #[cfg(not(target_os = "android"))]
 use journey_core::vault::VaultAvailability;
 use journey_core::vault::VaultStatus;
@@ -176,10 +180,64 @@ async fn keystore_probe<R: Runtime>(webview: Webview<R>) -> Result<ProbeReport, 
 #[tauri::command]
 async fn lookup_stops<R: Runtime>(
     webview: Webview<R>,
+    request_id: String,
     request: StopQuery,
 ) -> Result<Vec<Stop>, TimetableError> {
     trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
-    timetable::lookup_stops(request)
+    webview
+        .state::<TimetableClient>()
+        .lookup_stops(request_id, request)
+        .await
+}
+
+#[tauri::command]
+async fn search_journeys<R: Runtime>(
+    webview: Webview<R>,
+    request_id: String,
+    request: JourneyQuery,
+) -> Result<Vec<Journey>, TimetableError> {
+    trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
+    webview
+        .state::<TimetableClient>()
+        .search_journeys(request_id, request)
+        .await
+}
+
+#[tauri::command]
+async fn departures<R: Runtime>(
+    webview: Webview<R>,
+    request_id: String,
+    request: DepartureQuery,
+) -> Result<Vec<Departure>, TimetableError> {
+    trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
+    webview
+        .state::<TimetableClient>()
+        .departures(request_id, request)
+        .await
+}
+
+#[tauri::command]
+async fn connection_detail<R: Runtime>(
+    webview: Webview<R>,
+    request_id: String,
+    request: DetailQuery,
+) -> Result<ConnectionDetail, TimetableError> {
+    trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
+    webview
+        .state::<TimetableClient>()
+        .connection_detail(request_id, request)
+        .await
+}
+
+#[tauri::command]
+async fn cancel_request<R: Runtime>(
+    webview: Webview<R>,
+    request_id: String,
+) -> Result<(), TimetableError> {
+    trusted(&webview).map_err(|_| TimetableError::SourceUnavailable)?;
+    webview
+        .state::<TimetableClient>()
+        .cancel_request(&request_id)
 }
 
 #[tauri::command]
@@ -247,17 +305,32 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             open_provider,
             keystore_probe,
             lookup_stops,
+            search_journeys,
+            departures,
+            connection_detail,
+            cancel_request,
+            account::account_status,
+            account::account_login,
+            account::account_refresh,
+            account::account_logout,
+            account::account_forget,
+            account::account_cancel,
+            account::account_save_session,
+            account::account_unlock_session,
+            account::account_protection,
             vault_status,
             set_appearance
         ])
         .setup(|app, api| {
+            app.manage(TimetableClient::new()?);
+            app.manage(account::Accounts::new()?);
             #[cfg(target_os = "android")]
             app.manage(Platform(api.register_android_plugin(
                 "sk.cestou.platform",
                 "AndroidPlatformPlugin",
             )?));
             #[cfg(not(target_os = "android"))]
-            let _ = (app, api);
+            let _ = api;
             Ok(())
         })
         .build()

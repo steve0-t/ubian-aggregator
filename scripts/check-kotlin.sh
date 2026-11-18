@@ -22,8 +22,11 @@ task_java="${JAVA_HOME:+$JAVA_HOME/bin/}java"
   plugins/android-platform/android/src/main/java/sk/cestou/platform/AppLanguage.kt \
   plugins/android-platform/android/src/main/java/sk/cestou/platform/VaultRecord.kt \
   plugins/android-platform/android/src/main/java/sk/cestou/platform/AccountVault.kt \
+  plugins/android-platform/android/src/main/java/sk/cestou/platform/RealSessionVault.kt \
+  tests/kotlin/SessionHarness.kt \
   "$task_tmp/PolicyHarness.kt"
 "$task_java" -cp "$task_tmp/platform.jar:$KOTLIN_STDLIB:$ANDROID_JAR" sk.cestou.platform.PolicyHarnessKt
+"$task_java" -cp "$task_tmp/platform.jar:$KOTLIN_STDLIB:$ANDROID_JAR" sk.cestou.platform.SessionHarnessKt
 "$task_java" -cp "$KOTLIN_COMPILER_CLASSPATH" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
   -no-stdlib -no-reflect -jvm-target 1.8 \
   -classpath "$KOTLIN_COMPILER_CLASSPATH" \
