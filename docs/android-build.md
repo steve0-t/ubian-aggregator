@@ -1,6 +1,6 @@
 # Android setup and build
 
-**The v0.2.0 native-timetable/account ARM64 debug preview is available on [GitHub Releases](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.0).** The release includes the APK, SHA-256 checksums, description and changelog; [v0.1.0](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.1.0) preserves the earlier master build. Device behavior, biometric persistence, other ABIs, release builds and fresh-checkout reproducibility remain unverified. The November 16 and Revision 1/2 artifact records below and in [account verification](account-verification.md#current-arm64-debug-apk) are historical.
+**The v0.2.1 ARM64 debug preview with the redesigned timetable interface is available on [GitHub Releases](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.1).** The release includes the APK, SHA-256 checksums, description and changelog. Earlier previews are available as [v0.2.0](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.0) and [v0.1.0](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.1.0). Device behavior, biometric persistence, other ABIs, release builds and fresh-checkout reproducibility remain unverified. The November 16 and Revision 1/2 artifact records below and in [account verification](account-verification.md#current-arm64-debug-apk) are historical.
 
 ## Selected and observed tooling
 
