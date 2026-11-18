@@ -1,5 +1,25 @@
 fn main() {
-    tauri_plugin::Builder::new(&["status", "open_provider", "keystore_probe"])
-        .android_path("android")
-        .build();
+    tauri_plugin::Builder::new(&[
+        "status",
+        "open_provider",
+        "keystore_probe",
+        "lookup_stops",
+        "search_journeys",
+        "departures",
+        "connection_detail",
+        "cancel_request",
+        "account_status",
+        "account_login",
+        "account_refresh",
+        "account_logout",
+        "account_forget",
+        "account_cancel",
+        "account_save_session",
+        "account_unlock_session",
+        "account_protection",
+        "vault_status",
+        "set_appearance",
+    ])
+    .android_path("android")
+    .build();
 }

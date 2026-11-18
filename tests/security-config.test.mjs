@@ -21,9 +21,25 @@ test("privileged main view has no remote capability or website frame access", ()
   assert.equal(capability.remote, undefined);
   assert.deepEqual(capability.windows, ["main"]);
   assert.deepEqual(capability.permissions.sort(), [
+    "android-platform:allow-account-cancel",
+    "android-platform:allow-account-forget",
+    "android-platform:allow-account-login",
+    "android-platform:allow-account-logout",
+    "android-platform:allow-account-protection",
+    "android-platform:allow-account-refresh",
+    "android-platform:allow-account-save-session",
+    "android-platform:allow-account-status",
+    "android-platform:allow-account-unlock-session",
+    "android-platform:allow-cancel-request",
+    "android-platform:allow-connection-detail",
+    "android-platform:allow-departures",
     "android-platform:allow-keystore-probe",
+    "android-platform:allow-lookup-stops",
     "android-platform:allow-open-provider",
+    "android-platform:allow-search-journeys",
+    "android-platform:allow-set-appearance",
     "android-platform:allow-status",
+    "android-platform:allow-vault-status",
   ]);
   assert.match(config.app.security.csp, /frame-src 'none'/);
   assert.match(config.app.security.csp, /script-src 'self';/);

@@ -1,0 +1,254 @@
+{
+  "status": "ok",
+  "connections": [
+    {
+      "uid": "61d5392f066560cd09fd1c8f8c8df70f",
+      "tripStartTime": "Wed, 18 Nov 2026 09:26:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 10:25:00 +0100",
+      "totalMinutes": 59,
+      "transfers": 0,
+      "parts": [
+        {
+          "distanceMetersWalking": 77,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:26:00 +0100",
+          "fromPlatform": 99,
+          "toArrivalTime": "Wed, 18 Nov 2026 09:30:00 +0100",
+          "toPlatform": 1,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 24355,
+            "stopRawName": "Bratislava, Autobusová stanica"
+          },
+          "toStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "timeTableTrip": null
+        },
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:30:00 +0100",
+          "fromPlatform": 1,
+          "toArrivalTime": "Wed, 18 Nov 2026 10:25:00 +0100",
+          "toPlatform": 2,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "toStop": {
+            "stopID": 8796,
+            "stopRawName": "Trnava, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1040022799,
+            "trip": 1,
+            "destination": "Rimavská Sobota,,AS",
+            "operatorName": "LeviTour s.r.o.",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "102515",
+              "lineName": "Bratislava – Trnava – Nitra – Zlaté Moravce – Zvolen – Lučenec - Rimavská Sobota",
+              "firmaID": 1040,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "uid": "e8463808d74d45050a8f8d38b04e1eff",
+      "tripStartTime": "Wed, 18 Nov 2026 09:40:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 11:28:00 +0100",
+      "totalMinutes": 108,
+      "transfers": 1,
+      "parts": [
+        {
+          "distanceMetersWalking": 58,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:40:00 +0100",
+          "fromPlatform": 99,
+          "toArrivalTime": "Wed, 18 Nov 2026 09:44:00 +0100",
+          "toPlatform": 17,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 24355,
+            "stopRawName": "Bratislava, Autobusová stanica"
+          },
+          "toStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "timeTableTrip": null
+        },
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:44:00 +0100",
+          "fromPlatform": 17,
+          "toArrivalTime": "Wed, 18 Nov 2026 10:32:00 +0100",
+          "toPlatform": 4,
+          "fromPlatformName": "",
+          "toPlatformName": "D",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "toStop": {
+            "stopID": 8594,
+            "stopRawName": "Senec, Aut. stanica"
+          },
+          "timeTableTrip": {
+            "tripID": 806138622,
+            "trip": 13,
+            "destination": "Senec,,Aut. stanica",
+            "operatorName": "ARRIVA Mobility Solutions",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "632",
+              "lineName": "Bratislava-Bernolákovo-Senec",
+              "firmaID": 806,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        },
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 10:50:00 +0100",
+          "fromPlatform": 5,
+          "toArrivalTime": "Wed, 18 Nov 2026 11:28:00 +0100",
+          "toPlatform": 20,
+          "fromPlatformName": "E",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 8594,
+            "stopRawName": "Senec, Aut. stanica"
+          },
+          "toStop": {
+            "stopID": 8796,
+            "stopRawName": "Trnava, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 806139019,
+            "trip": 9,
+            "destination": "Trnava,,AS",
+            "operatorName": "ARRIVA Mobility Solutions",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "666",
+              "lineName": "Senec-Trnava",
+              "firmaID": 806,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "uid": "fc67e6579b108aea4ff5e9196910f185",
+      "tripStartTime": "Wed, 18 Nov 2026 09:41:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 11:50:00 +0100",
+      "totalMinutes": 129,
+      "transfers": 1,
+      "parts": [
+        {
+          "distanceMetersWalking": 440,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:41:00 +0100",
+          "fromPlatform": 99,
+          "toArrivalTime": "Wed, 18 Nov 2026 09:45:00 +0100",
+          "toPlatform": 2,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 24355,
+            "stopRawName": "Bratislava, Autobusová stanica"
+          },
+          "toStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "timeTableTrip": null
+        },
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 09:45:00 +0100",
+          "fromPlatform": 2,
+          "toArrivalTime": "Wed, 18 Nov 2026 10:55:00 +0100",
+          "toPlatform": 6,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 7818,
+            "stopRawName": "Bratislava, AS"
+          },
+          "toStop": {
+            "stopID": 8358,
+            "stopRawName": "Nitra, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1040022791,
+            "trip": 13,
+            "destination": "Banská Bystrica,,AS",
+            "operatorName": "Viliam Turan-TURANCAR bus lines",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "102513",
+              "lineName": "Bratislava-Trnava-Nitra-Zvolen-Banská Bystrica-Brezno",
+              "firmaID": 1040,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        },
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 11:10:00 +0100",
+          "fromPlatform": 1,
+          "toArrivalTime": "Wed, 18 Nov 2026 11:50:00 +0100",
+          "toPlatform": 1,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 8358,
+            "stopRawName": "Nitra, AS"
+          },
+          "toStop": {
+            "stopID": 8796,
+            "stopRawName": "Trnava, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1040022983,
+            "trip": 2,
+            "destination": "Plzeň,,CAN",
+            "operatorName": "LeviTour s.r.o.",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "609802",
+              "lineName": "Plzeň - Praha - Brno - Bratislava - Trnava - Rimavská Sobota",
+              "firmaID": 1040,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

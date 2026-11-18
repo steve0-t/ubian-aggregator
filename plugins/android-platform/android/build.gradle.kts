@@ -31,6 +31,9 @@ kotlin {
 
 dependencies {
     implementation(project(":tauri-android"))
+    // Tauri's lifecycle hooks name this type, but its implementation dependency
+    // is not exported onto the plugin's compile classpath.
+    compileOnly("androidx.appcompat:appcompat:1.7.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
 }

@@ -113,7 +113,7 @@ function assertReadable(text, background) {
   );
 }
 
-test("custom accents keep buttons and highlighted text readable in both themes", () => {
+test("custom accents keep buttons and highlighted text readable in every palette", () => {
   const colors = new Set(ACCENT_PRESETS.map(({ color }) => color));
   // Cover the RGB gamut, including black, white, saturated and pale colors.
   for (const r of [0, 51, 102, 153, 204, 255]) {
@@ -139,9 +139,19 @@ test("custom accents keep buttons and highlighted text readable in both themes",
     for (const background of [
       "#191a1c",
       "#202123",
+      "#2a2b2e",
       tokens["--accent-dark-soft"],
     ]) {
       assertReadable(tokens["--accent-dark-text"], background);
+    }
+    for (const background of [
+      "#000000",
+      "#0d0d0d",
+      "#141414",
+      "#1b1b1b",
+      tokens["--accent-black-soft"],
+    ]) {
+      assertReadable(tokens["--accent-black-text"], background);
     }
   }
 });
@@ -149,5 +159,16 @@ test("custom accents keep buttons and highlighted text readable in both themes",
 test("invalid custom accents cannot become CSS values", () => {
   for (const value of ["#fff", "red", "#gg0000", "#000000; color: red", ""]) {
     assert.equal(accentTokens(value)["--accent"], DEFAULT_ACCENT);
+  }
+});
+
+test("Ukrainian and true black persist without migrating existing preferences", () => {
+  for (const theme of ["system", "light", "dark", "black"]) {
+    for (const language of ["sk", "en", "uk"]) {
+      const storage = memoryStorage();
+      const preferences = { accent: "#123456", theme, language };
+      assert.equal(savePreferences(preferences, storage), true);
+      assert.deepEqual(readPreferences(storage), preferences);
+    }
   }
 });
