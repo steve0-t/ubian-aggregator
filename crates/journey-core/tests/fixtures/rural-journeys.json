@@ -1,0 +1,131 @@
+{
+  "status": "ok",
+  "connections": [
+    {
+      "uid": "3abc04f5d3db376ea6446cb8669b2301",
+      "tripStartTime": "Wed, 18 Nov 2026 06:44:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 07:40:00 +0100",
+      "totalMinutes": 56,
+      "transfers": 0,
+      "parts": [
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 06:44:00 +0100",
+          "fromPlatform": 1,
+          "toArrivalTime": "Wed, 18 Nov 2026 07:40:00 +0100",
+          "toPlatform": 99,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 1321,
+            "stopRawName": "Dvorianky, č.d.143"
+          },
+          "toStop": {
+            "stopID": 8195,
+            "stopRawName": "Košice, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1002093022,
+            "trip": 6,
+            "destination": "Košice, AS",
+            "operatorName": "SAD Humenné a.s.",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "073104",
+              "lineName": "Košice - Sečovce - Vranov nad Topľou - Tovarné - Humenné",
+              "firmaID": 1002,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "uid": "f67abe13735477f218f3cde5730472e5",
+      "tripStartTime": "Wed, 18 Nov 2026 07:44:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 08:40:00 +0100",
+      "totalMinutes": 56,
+      "transfers": 0,
+      "parts": [
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 07:44:00 +0100",
+          "fromPlatform": 1,
+          "toArrivalTime": "Wed, 18 Nov 2026 08:40:00 +0100",
+          "toPlatform": 99,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 1321,
+            "stopRawName": "Dvorianky, č.d.143"
+          },
+          "toStop": {
+            "stopID": 8195,
+            "stopRawName": "Košice, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1002093028,
+            "trip": 8,
+            "destination": "Košice, AS",
+            "operatorName": "SAD Humenné a.s.",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "073104",
+              "lineName": "Košice - Sečovce - Vranov nad Topľou - Tovarné - Humenné",
+              "firmaID": 1002,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "uid": "67f80935d07811af8dd6647b3e72ef9a",
+      "tripStartTime": "Wed, 18 Nov 2026 08:44:00 +0100",
+      "tripEndTime": "Wed, 18 Nov 2026 09:40:00 +0100",
+      "totalMinutes": 56,
+      "transfers": 0,
+      "parts": [
+        {
+          "distanceMetersWalking": 0,
+          "fromDepartureTime": "Wed, 18 Nov 2026 08:44:00 +0100",
+          "fromPlatform": 1,
+          "toArrivalTime": "Wed, 18 Nov 2026 09:40:00 +0100",
+          "toPlatform": 99,
+          "fromPlatformName": "",
+          "toPlatformName": "",
+          "delayMinutes": 0,
+          "fromStop": {
+            "stopID": 1321,
+            "stopRawName": "Dvorianky, č.d.143"
+          },
+          "toStop": {
+            "stopID": 8195,
+            "stopRawName": "Košice, AS"
+          },
+          "timeTableTrip": {
+            "tripID": 1002093025,
+            "trip": 10,
+            "destination": "Košice, AS",
+            "operatorName": "SAD Humenné a.s.",
+            "canceled": false,
+            "timeTableLine": {
+              "line": "073104",
+              "lineName": "Košice - Sečovce - Vranov nad Topľou - Tovarné - Humenné",
+              "firmaID": 1002,
+              "ezIsTrain": false,
+              "ezIsUrban": false,
+              "ezIsBus": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

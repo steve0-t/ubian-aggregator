@@ -1,6 +1,7 @@
-//! Policy shared by the coordinator and the Android request-filter implementation.
-//! No HTTP adapter, credentials, or provider session is owned by this crate.
+//! Shared policy, guest timetable and native account session adapters and vault status.
+//! The timetable client owns no credentials, cookies or provider account session.
 
+pub mod account;
 pub mod timetable;
 pub mod vault;
 

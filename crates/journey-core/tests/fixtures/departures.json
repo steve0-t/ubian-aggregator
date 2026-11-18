@@ -1,0 +1,49 @@
+{
+  "status": "ok",
+  "departures": [
+    {
+      "plannedDepartureTime": 1794988800,
+      "plannedDepartureTimestamp": 1794988800,
+      "platformNumber": 1,
+      "platformName": "",
+      "delayMinutes": 0,
+      "timeTableTrip": {
+        "tripID": 803255661,
+        "trip": 125,
+        "destination": "Bratislava,  OC Einsteinova",
+        "operatorName": "Dopravný podnik Bratislava",
+        "canceled": false,
+        "timeTableLine": {
+          "line": "50",
+          "lineName": "50",
+          "firmaID": 800,
+          "ezIsTrain": false,
+          "ezIsUrban": true,
+          "ezIsBus": false
+        }
+      }
+    },
+    {
+      "plannedDepartureTime": 1794988860,
+      "plannedDepartureTimestamp": 1794988860,
+      "platformNumber": 1,
+      "platformName": "",
+      "delayMinutes": 0,
+      "timeTableTrip": {
+        "tripID": 803251615,
+        "trip": 128,
+        "destination": "Bratislava, Ondrejský cintorín",
+        "operatorName": "Dopravný podnik Bratislava",
+        "canceled": false,
+        "timeTableLine": {
+          "line": "72",
+          "lineName": "72",
+          "firmaID": 800,
+          "ezIsTrain": false,
+          "ezIsUrban": true,
+          "ezIsBus": false
+        }
+      }
+    }
+  ]
+}

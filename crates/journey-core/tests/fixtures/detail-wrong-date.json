@@ -1,0 +1,73 @@
+{
+  "status": "ok",
+  "trips": {
+    "1040022799": {
+      "stops": [
+        {
+          "stopID": 7818,
+          "stopRawName": "Bratislava, AS",
+          "stopOrder": 1,
+          "plannedDepartureTimestamp": 1794904200,
+          "platformNumber": 1,
+          "platformName": ""
+        },
+        {
+          "stopID": 236,
+          "stopRawName": "Bratislava, Letisko-Airport",
+          "stopOrder": 2,
+          "plannedDepartureTimestamp": 1794905100,
+          "platformNumber": 1,
+          "platformName": ""
+        },
+        {
+          "stopID": 8796,
+          "stopRawName": "Trnava, AS",
+          "stopOrder": 3,
+          "plannedDepartureTimestamp": 1794907500,
+          "platformNumber": 2,
+          "platformName": ""
+        },
+        {
+          "stopID": 8358,
+          "stopRawName": "Nitra, AS",
+          "stopOrder": 4,
+          "plannedDepartureTimestamp": 1794909900,
+          "platformNumber": 5,
+          "platformName": ""
+        },
+        {
+          "stopID": 4844,
+          "stopRawName": "Zvolen, AS",
+          "stopOrder": 6,
+          "plannedDepartureTimestamp": 1794914400,
+          "platformNumber": 4,
+          "platformName": ""
+        },
+        {
+          "stopID": 6746,
+          "stopRawName": "Detva, aut.st.",
+          "stopOrder": 7,
+          "plannedDepartureTimestamp": 1794915900,
+          "platformNumber": 1,
+          "platformName": ""
+        },
+        {
+          "stopID": 1830,
+          "stopRawName": "Lučenec, AS",
+          "stopOrder": 8,
+          "plannedDepartureTimestamp": 1794917700,
+          "platformNumber": 3,
+          "platformName": ""
+        },
+        {
+          "stopID": 4308,
+          "stopRawName": "Rimavská Sobota, AS",
+          "stopOrder": 9,
+          "plannedDepartureTimestamp": 1794919500,
+          "platformNumber": 99,
+          "platformName": ""
+        }
+      ]
+    }
+  }
+}
