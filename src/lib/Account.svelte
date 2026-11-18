@@ -312,7 +312,7 @@
       <p>{t.accountSessionSaved}</p>
       {#if !signedIn}<p class="muted">{t.accountStorageLocked}</p>{/if}
     {:else}<p class="muted">
-        {t.accountSessionMemory}
+        {#if hasSession}{t.accountSessionMemory}{/if}
         {t.accountRememberOff}
       </p>{/if}
     {#if account && account.storage.availability !== "available" && account.storage.availability !== "io_failure"}<p
@@ -345,14 +345,7 @@
             ? t.accountUnlocking
             : t.accountUnlockSession}</button
         >{/if}
-      {#if hasSession || account?.storage.recordPresent}<button
-          class="secondary"
-          type="button"
-          disabled={!!operation}
-          onclick={() => void forget()}>{t.accountForget}</button
-        >{/if}
     </div>
-    <p class="muted">{t.accountForgetHint}</p>
   </section>
   <div class="account-provider-links">
     <button
@@ -363,4 +356,16 @@
     >
     <p class="muted">{t.accountWebsiteHint}</p>
   </div>
+  {#if hasSession || account?.storage.recordPresent}
+    <section class="account-removal" aria-label={t.accountForget}>
+      <button
+        class="secondary"
+        type="button"
+        disabled={!!operation}
+        aria-describedby="account-forget-hint"
+        onclick={() => void forget()}>{t.accountForget}</button
+      >
+      <p class="muted" id="account-forget-hint">{t.accountForgetHint}</p>
+    </section>
+  {/if}
 </section>

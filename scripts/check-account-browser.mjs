@@ -203,6 +203,23 @@ try {
   );
   assert.equal(save.args.language, "sk");
   assert.match(save.args.requestId, /^timetable-/);
+  assert.equal(
+    await account
+      .locator(".account-storage")
+      .getByRole("button", {
+        name: "Zabudnúť účet",
+        exact: true,
+      })
+      .count(),
+    0,
+  );
+  await account
+    .locator(".account-removal")
+    .getByRole("button", {
+      name: "Zabudnúť účet",
+      exact: true,
+    })
+    .waitFor();
 
   await page.evaluate(() => (window.__accountTest.refreshMode = "offline"));
   await refresh.click();
@@ -477,7 +494,7 @@ try {
   assert.match(await account.innerText(), /Nie ste prihlásení/);
   assert.deepEqual(errors, []);
   console.log(
-    "Account UI: native login/status, escaped profile, explicit session save, offline/expired/cached states, cancellation and late completion, forgotten input, storage fallback and no persisted credentials passed using test-only IPC.",
+    "Account UI: signed-out theme persistence, separate session save and account removal, native login/status, escaped profile, offline/expired/cached states, cancellation and late completion, forgotten input, storage fallback and no persisted credentials passed using test-only IPC.",
   );
 } finally {
   await browser.close();

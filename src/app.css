@@ -2066,7 +2066,8 @@ dd {
 
 .account-summary,
 .account-storage,
-.account-provider-links {
+.account-provider-links,
+.account-removal {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
@@ -2091,8 +2092,13 @@ dd {
 
 .account-actions button,
 .native-account form button,
-.account-provider-links button {
+.account-provider-links button,
+.account-removal button {
   max-width: 100%;
+}
+
+.account-removal button {
+  color: var(--error);
 }
 
 .account-cancel {
