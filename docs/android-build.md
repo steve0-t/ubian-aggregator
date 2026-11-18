@@ -1,6 +1,6 @@
 # Android setup and build
 
-**The current native-timetable/account ARM64 debug APK was built on 2026-11-18.** Signature, ZIP alignment and packaged native/frontend assets passed verification. See [the current artifact and SHA-256](account-verification.md#current-arm64-debug-apk). Device behavior, biometric persistence, other ABIs, release builds and fresh-checkout reproducibility remain unverified. The November 16 and Revision 1/2 records below are historical.
+**The v0.2.0 native-timetable/account ARM64 debug preview is available on [GitHub Releases](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.0).** The release includes the APK, SHA-256 checksums, description and changelog; [v0.1.0](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.1.0) preserves the earlier master build. Device behavior, biometric persistence, other ABIs, release builds and fresh-checkout reproducibility remain unverified. The November 16 and Revision 1/2 artifact records below and in [account verification](account-verification.md#current-arm64-debug-apk) are historical.
 
 ## Selected and observed tooling
 
@@ -29,12 +29,12 @@ Tauri's [Android prerequisites](https://v2.tauri.app/start/prerequisites/#androi
 The shell exports `JAVA_HOME`, `ANDROID_HOME`, `ANDROID_SDK_ROOT` and `NDK_HOME`, and adds SDK commands and `~/.cargo/bin` to `PATH`. Valid SDK/NDK paths supplied by the caller take precedence; empty or stale default directories fall back to the Nix toolchain. It also selects the SDK's patched `aapt2` through `GRADLE_OPTS`, so Gradle does not try to run an incompatible Maven binary on NixOS.
 
 ```sh
-nix develop path:.
+nix develop .
 npm ci
 cargo tauri --version
 ```
 
-After changing the SDK composition, run `direnv reload` or leave and re-enter the Nix shell. Nesting `nix develop` inside an older shell can retain its valid but incomplete `ANDROID_HOME`.
+Use the Git-backed `nix develop .` invocation above so ignored build caches and local files are excluded from the flake source. After changing the SDK composition, run `direnv reload` or leave and re-enter the Nix shell. Nesting `nix develop` inside an older shell can retain its valid but incomplete `ANDROID_HOME`.
 
 If the CLI is missing, install it with `cargo install tauri-cli --version 2.12.4 --locked`. Reuse an existing installation of that version. Likewise, add only missing Rust Android targets:
 

@@ -2,16 +2,18 @@
 
 An unofficial Android client for [Ubian](https://www.ubian.sk/), using Rust, Tauri 2, Svelte and TypeScript. ubian-aggregator is not affiliated with Ubian.
 
+Download the [v0.2.0 ARM64 debug preview](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.0), or the [initial v0.1.0 build](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.1.0). Each release includes an APK, SHA-256 checksums, description and changelog. These builds require Android 8.0 or newer; Android device acceptance remains outstanding.
+
 **Revision 2 implements native online guest timetable search.** The bundled Svelte interface uses a narrow Rust Ubian adapter for real stop selection, journeys and departure boards, without login or a website handoff. It keeps searches in memory and labels results as scheduled data. Connection-detail enrichment is date-checked: Ubian currently returns a previous-day stop sequence for the tested trips, so that enrichment is unavailable while search legs remain usable. See [implementation status](docs/implementation-status.md) and [verification](docs/revision-2-verification.md).
 
 The [transport API analysis](docs/transport-api-analysis.md) and [provider discovery](docs/provider-discovery.md) document the anonymous website interfaces. Revision 2 authorizes their use for this personal client; they are not a supported public API. Ubian covers the required Dvorianky–Košice buses that were missing from the tested Transitous feed. Native email/password sign-in, account summary, session refresh/logout and opt-in encrypted session storage are now implemented; see [account verification](docs/account-verification.md). Cards, balances, purchases and saved-password reuse remain separate work.
 
-The implementation follows [INSTRUCTIONS.md](INSTRUCTIONS.md), amended by [Revision 1](REVISION.md) and [Revision 2](REVISION-2.md), on the existing `revision-1` branch. Device acceptance, including TalkBack, Back and Android runtime networking, still requires a connected device. Build and host checks are recorded separately from device checks.
+The implementation follows [INSTRUCTIONS.md](INSTRUCTIONS.md), amended by [Revision 1](REVISION.md) and [Revision 2](REVISION-2.md). The `revision-1` work is merged into `master`. Device acceptance, including TalkBack, Back and Android runtime networking, still requires a connected device. Build and host checks are recorded separately from device checks.
 
 ## Run the local interface
 
 ```sh
-nix develop path:.
+nix develop .
 npm ci
 npm run dev
 ```
@@ -47,7 +49,7 @@ The independent core crate and Tauri app have committed Cargo lockfiles. For the
 Android Studio is not required. The Nix shell supplies the pinned command-line SDK, build tools, NDK and JDK, reusing packages already in the Nix store. `npm run tauri` delegates to the separately installed, versioned Cargo Tauri CLI. See [Android setup and build instructions](docs/android-build.md).
 
 ```sh
-nix develop path:.
+nix develop .
 npm run doctor
 npm run android:build -- --debug
 ```
