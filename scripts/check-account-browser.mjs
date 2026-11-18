@@ -59,6 +59,11 @@ try {
             case "account_cancel":
             case "account_protection":
               return;
+            case "load_theme":
+              return sessionStorage.getItem("mock-device-theme");
+            case "save_theme":
+              sessionStorage.setItem("mock-device-theme", args.theme);
+              return;
             case "account_status":
               return structuredClone(state.account);
             case "account_login":
@@ -126,6 +131,20 @@ try {
   });
   const account = page.locator(".native-account");
   const nav = page.locator(".mobile-navigation");
+  await nav.getByRole("button", { name: "Nastavenia", exact: true }).click();
+  await page.locator('.theme-option:has(input[value="black"])').click();
+  await page.waitForFunction(
+    () => sessionStorage.getItem("mock-device-theme") === "black",
+  );
+  assert.equal(
+    await page.evaluate(() =>
+      window.__accountTest.calls.some(({ name }) =>
+        name.startsWith("account_"),
+      ),
+    ),
+    false,
+    "saving a theme does not require an account",
+  );
   const openAccount = async () => {
     await nav.getByRole("button", { name: "Účet", exact: true }).click();
     await account.locator("#account-email").waitFor();
@@ -450,6 +469,12 @@ try {
     "handoff-ui-password",
   ])
     assert.equal(stored.includes(secret), false);
+  await page.evaluate(() => localStorage.removeItem("cestou.preferences.v1"));
+  await page.reload();
+  await page.locator(".timetable-panel").waitFor();
+  assert.equal(await page.locator("html").getAttribute("data-theme"), "black");
+  await openAccount();
+  assert.match(await account.innerText(), /Nie ste prihlásení/);
   assert.deepEqual(errors, []);
   console.log(
     "Account UI: native login/status, escaped profile, explicit session save, offline/expired/cached states, cancellation and late completion, forgotten input, storage fallback and no persisted credentials passed using test-only IPC.",

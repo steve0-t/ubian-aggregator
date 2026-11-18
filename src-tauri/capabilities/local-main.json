@@ -23,6 +23,8 @@
     "android-platform:allow-account-unlock-session",
     "android-platform:allow-account-protection",
     "android-platform:allow-vault-status",
-    "android-platform:allow-set-appearance"
+    "android-platform:allow-set-appearance",
+    "android-platform:allow-load-theme",
+    "android-platform:allow-save-theme"
   ]
 }

@@ -1,4 +1,5 @@
 import type { Language } from "../i18n";
+import type { Theme } from "../preferences";
 
 export type Destination = "login" | "support";
 
@@ -51,6 +52,9 @@ export const openProvider = (destination: Destination, language: Language) =>
 export const probeKeystore = () => invoke<ProbeReport>("keystore_probe");
 export const setSystemAppearance = (theme: "light" | "dark" | "black") =>
   invoke<void>("set_appearance", { theme });
+export const loadDeviceTheme = () => invoke<Theme | null>("load_theme");
+export const saveDeviceTheme = (theme: Theme) =>
+  invoke<void>("save_theme", { theme });
 
 export interface Stop {
   id: number;

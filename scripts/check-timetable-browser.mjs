@@ -66,8 +66,11 @@ try {
                 lastError: null,
               };
             case "set_appearance":
+            case "save_theme":
             case "cancel_request":
               return;
+            case "load_theme":
+              return null;
             case "lookup_stops":
               if (state.lookupMode === "pending")
                 return new Promise((resolve) => {
