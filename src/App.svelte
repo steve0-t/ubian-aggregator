@@ -30,7 +30,7 @@
 
   type Tab = "journeys" | "account" | "settings";
   const navigation = [
-    { id: "journeys", icon: "route" },
+    { id: "journeys", icon: "bus" },
     { id: "account", icon: "user" },
     { id: "settings", icon: "settings" },
   ] as const;
@@ -231,7 +231,7 @@
     </div>
   </aside>
 
-  <div class="workspace">
+  <div class="workspace" class:journeys-workspace={tab === "journeys"}>
     <header class="workspace-header">
       <button
         class="mobile-brand"
@@ -246,11 +246,13 @@
           >{t[tab]}</span
         >
       </div>
-      <div class="header-actions">
-        <span class="build-badge"
-          ><span class="status-dot"></span>{t.developmentLabel}</span
-        >
-      </div>
+      {#if tab !== "journeys"}
+        <div class="header-actions">
+          <span class="build-badge"
+            ><span class="status-dot"></span>{t.developmentLabel}</span
+          >
+        </div>
+      {/if}
     </header>
 
     <main id="main" tabindex="-1">
@@ -269,46 +271,56 @@
         {/if}
 
         {#if tab === "journeys"}
-          <div class="page-intro">
-            <h1>{t.journeys}</h1>
+          <div class="journeys-hero">
+            <div class="journeys-intro">
+              <h1>{t.onlineTimetable}</h1>
+              <p>{t.onlineHint}</p>
+            </div>
+            <div class="transit-art" aria-hidden="true">
+              <span class="transit-track track-main"></span>
+              <span class="transit-track track-branch"></span>
+              <span class="transit-track track-cross"></span>
+              <span class="transit-station station-first"></span>
+              <span class="transit-station station-transfer"></span>
+              <span class="transit-station station-last"></span>
+            </div>
           </div>
 
-          <Timetables {language} />
+          <div class="journeys-grid">
+            <Timetables {language} />
 
-          {#if !native}
-            <div class="preview-notice">
-              <Icon name="monitor" size={18} />
-              <p>{t.browserPreview}</p>
-            </div>
-          {/if}
-
-          <div class="quick-links">
-            <button
-              class="quick-card panel"
-              onclick={() => selectTab("account")}
-            >
-              <span class="card-icon"><Icon name="user" size={22} /></span>
-              <span class="quick-card-copy"
-                ><strong>{t.accountTitle}</strong></span
+            <div class="journeys-links">
+              <button
+                class="quick-card panel"
+                onclick={() => selectTab("account")}
               >
-              <Icon name="chevron" size={18} />
-            </button>
-          </div>
+                <span class="card-icon accent-icon">
+                  <Icon name="user" size={22} />
+                </span>
+                <strong>{t.accountTitle}</strong>
+                <Icon name="arrow" size={19} />
+              </button>
 
-          <section class="privacy-summary" aria-labelledby="privacy-title">
-            <span class="privacy-icon"><Icon name="shield" size={23} /></span>
-            <div>
-              <h2 id="privacy-title">{t.privacy}</h2>
-              <p>{t.privacyDescription}</p>
-              <details>
-                <summary
-                  >{t.privacyDetails}<Icon name="chevron" size={14} /></summary
-                >
-                <p>{t.rulesPending}</p>
-                <p>{t.limits}</p>
-              </details>
+              <section
+                class="privacy-summary panel"
+                aria-labelledby="privacy-title"
+              >
+                <div class="privacy-heading">
+                  <Icon name="shield" size={20} />
+                  <h2 id="privacy-title">{t.privacy}</h2>
+                </div>
+                <p>{t.noJourneyHistory}</p>
+                <details>
+                  <summary>
+                    {t.privacyDetails}<Icon name="chevron" size={14} />
+                  </summary>
+                  <p>{t.privacyDescription}</p>
+                  <p>{t.rulesPending}</p>
+                  <p>{t.limits}</p>
+                </details>
+              </section>
             </div>
-          </section>
+          </div>
         {:else if tab === "account"}
           <div class="page-intro">
             <h1>{t.accountTitle}</h1>

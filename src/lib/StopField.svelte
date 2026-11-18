@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
+  import Icon from "./Icon.svelte";
   import {
     cancelRequest,
     isNative,
@@ -18,12 +19,14 @@
     id,
     label,
     language,
+    destination = false,
     value = $bindable(""),
     selected = $bindable<Stop | null>(null),
   }: {
     id: string;
     label: string;
     language: Language;
+    destination?: boolean;
     value?: string;
     selected?: Stop | null;
   } = $props();
@@ -91,41 +94,48 @@
 </script>
 
 <div class="stop-field">
-  <label for={id}>{label}</label>
   <div class="stop-search">
-    <input
-      {id}
-      type="search"
-      {value}
-      autocomplete="off"
-      maxlength="100"
-      aria-describedby={`${id}-feedback`}
-      oninput={(event) => edit(event.currentTarget.value)}
-      onkeydown={(event) => {
-        if (event.key === "Escape") reset();
-      }}
-    />
+    <span class="stop-marker" aria-hidden="true">
+      {#if destination}<Icon name="pin" size={20} />{:else}<span></span>{/if}
+    </span>
+    <label for={id}>
+      <span>{label}</span>
+      <input
+        {id}
+        type="search"
+        {value}
+        placeholder={t.stopPlaceholder}
+        autocomplete="off"
+        maxlength="100"
+        aria-describedby={`${id}-feedback`}
+        oninput={(event) => edit(event.currentTarget.value)}
+        onkeydown={(event) => {
+          if (event.key === "Escape") reset();
+        }}
+      />
+    </label>
     <button
-      class="secondary stop-lookup"
+      class="stop-lookup"
       type="button"
       disabled={!isNative() || loading}
       aria-label={`${t.lookupStop}: ${label}`}
-      onclick={() => void lookup()}>{t.lookupStop}</button
+      title={t.lookupStop}
+      onclick={() => void lookup()}><Icon name="search" size={19} /></button
     >
-    {#if loading}<button
-        class="secondary"
-        type="button"
-        onclick={() => {
-          reset();
-          error = "cancelled";
-        }}>{t.cancel}</button
-      >{/if}
   </div>
   <p id={`${id}-feedback`} class="stop-feedback muted" role="status">
-    {#if loading}{t.searching}{:else if error}{t[
-        error
-      ]}{:else if selected}{t.stopSelected}{:else if suggestions?.length === 0}{t.noStops}{:else if value}{t.selectStop}{/if}
+    {#if loading}{t.searching}{:else if error}{t[error]}{:else if selected}<span
+        class="sr-only">{t.stopSelected}</span
+      >{:else if suggestions?.length === 0}{t.noStops}{:else if value}{t.selectStop}{/if}
   </p>
+  {#if loading}<button
+      class="secondary stop-cancel"
+      type="button"
+      onclick={() => {
+        reset();
+        error = "cancelled";
+      }}>{t.cancel}</button
+    >{/if}
   {#if suggestions?.length}
     <ul class="stop-suggestions" aria-label={`${t.stopSuggestions}: ${label}`}>
       {#each suggestions as stop (stop.id)}

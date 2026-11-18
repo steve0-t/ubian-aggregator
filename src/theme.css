@@ -1,6 +1,7 @@
 :root {
   color-scheme: light;
   --background: #ffffff;
+  --journeys-background: #f2f6f3;
   --sidebar: #f7f8f8;
   --surface: #ffffff;
   --surface-secondary: #f7f8f8;
@@ -30,6 +31,7 @@
 :root[data-theme="black"] {
   color-scheme: dark;
   --background: #000000;
+  --journeys-background: var(--background);
   --sidebar: #000000;
   --surface: #0d0d0d;
   --surface-secondary: #141414;
@@ -48,6 +50,7 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --background: #191a1c;
+  --journeys-background: var(--background);
   --sidebar: #171819;
   --surface: #202123;
   --surface-secondary: #242527;
@@ -67,6 +70,7 @@
   :root[data-theme="system"] {
     color-scheme: dark;
     --background: #191a1c;
+    --journeys-background: var(--background);
     --sidebar: #171819;
     --surface: #202123;
     --surface-secondary: #242527;

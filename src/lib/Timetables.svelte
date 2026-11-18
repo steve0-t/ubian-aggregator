@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount, tick } from "svelte";
+  import Icon from "./Icon.svelte";
   import StopField from "./StopField.svelte";
   import {
     cancelRequest,
@@ -29,6 +30,7 @@
 
   let { language }: { language: Language } = $props();
   const t = $derived(messages[language]);
+  const native = isNative();
   const initialTime = timetableInput();
   let originText = $state("");
   let destinationText = $state("");
@@ -195,49 +197,63 @@
   });
 </script>
 
-<section class="timetable-panel panel" aria-labelledby="timetable-title">
+<section class="timetable-panel panel" aria-label={t.timetables}>
   <div hidden={detailOpen}>
-    <h2 id="timetable-title">{t.onlineTimetable}</h2>
-    <p class="muted">{t.onlineHint}</p>
     <form onsubmit={search} aria-busy={loading}>
       <fieldset class="timetable-modes">
         <legend class="sr-only">{t.timetables}</legend>
-        <label
-          ><input
+        <label>
+          <input
             type="radio"
             name="timetable-mode"
             value="connections"
             bind:group={mode}
-          />{t.connections}</label
-        >
-        <label
-          ><input
+          />
+          <Icon name="bus" size={19} />
+          <span>{t.connections}</span>
+        </label>
+        <label>
+          <input
             type="radio"
             name="timetable-mode"
             value="departureBoard"
             bind:group={mode}
-          />{t.departureBoard}</label
-        >
+            aria-label={t.departureBoard}
+          />
+          <Icon name="clock" size={19} />
+          <span>{t.departuresLabel}</span>
+        </label>
       </fieldset>
       <div class="route-fields">
-        <StopField
-          id="origin-stop"
-          label={t.origin}
-          {language}
-          bind:value={originText}
-          bind:selected={origin}
-        />
-        {#if mode === "connections"}
-          <button type="button" class="secondary swap-stops" onclick={swap}
-            >{t.swapStops} ↕</button
-          >
+        <div class="route-stops">
           <StopField
-            id="destination-stop"
-            label={t.destination}
+            id="origin-stop"
+            label={t.origin}
             {language}
-            bind:value={destinationText}
-            bind:selected={destination}
+            bind:value={originText}
+            bind:selected={origin}
           />
+          {#if mode === "connections"}
+            <StopField
+              id="destination-stop"
+              label={t.destination}
+              {language}
+              destination
+              bind:value={destinationText}
+              bind:selected={destination}
+            />
+          {/if}
+        </div>
+        {#if mode === "connections"}
+          <button
+            type="button"
+            class="swap-stops"
+            aria-label={t.swapStops}
+            title={t.swapStops}
+            onclick={swap}
+          >
+            <Icon name="swap" size={20} />
+          </button>
         {/if}
       </div>
       <div class="timetable-options">
@@ -276,37 +292,49 @@
           ></label
         >
       </div>
-      <p class="muted">{t.timetableZone}</p>
-      <details class="time-occurrence">
-        <summary>{t.repeatedHour}</summary>
-        <p class="muted">{t.repeatedHourHint}</p>
-        <label for="time-occurrence"
-          >{t.timeOccurrence}<select
-            id="time-occurrence"
-            bind:value={timeOccurrence}
-            ><option value="earlier">{t.firstOccurrence}</option><option
-              value="later">{t.secondOccurrence}</option
-            ></select
-          ></label
-        >
-      </details>
-      {#if mode === "connections"}<label class="direct-option"
-          ><input
-            type="checkbox"
-            bind:checked={directOnly}
-          />{t.directOnly}</label
-        >{/if}
+      <div class="timetable-preferences">
+        {#if mode === "connections"}
+          <label class="direct-option">
+            <input type="checkbox" bind:checked={directOnly} />
+            <span>{t.directOnly}</span>
+          </label>
+        {/if}
+        <details class="time-occurrence">
+          <summary>{t.repeatedHour}<Icon name="chevron" size={14} /></summary>
+          <p class="muted">{t.repeatedHourHint}</p>
+          <label for="time-occurrence"
+            >{t.timeOccurrence}<select
+              id="time-occurrence"
+              bind:value={timeOccurrence}
+              ><option value="earlier">{t.firstOccurrence}</option><option
+                value="later">{t.secondOccurrence}</option
+              ></select
+            ></label
+          >
+        </details>
+      </div>
       <div class="search-actions">
-        <button class="primary" type="submit" disabled={!isNative()}
-          >{mode === "connections"
-            ? t.searchConnections
-            : t.departureBoard}</button
+        <button
+          class="primary"
+          type="submit"
+          disabled={!native}
+          aria-describedby={native ? undefined : "timetable-preview"}
         >
+          <Icon name="search" size={20} />
+          {mode === "connections" ? t.searchConnections : t.departureBoard}
+        </button>
         {#if loading}<button class="secondary" type="button" onclick={cancel}
             >{t.cancel}</button
           >{/if}
       </div>
-      <p class="muted" role="status">
+      <p class="muted timetable-zone">{t.timetableZone}</p>
+      {#if !native}
+        <p class="preview-notice" id="timetable-preview">
+          <Icon name="info" size={17} />
+          <span>{t.browserPreview}</span>
+        </p>
+      {/if}
+      <p class="muted search-status" role="status">
         {#if loading}{t.searchInProgress}{:else if error}{t[error]}{/if}
       </p>
     </form>
@@ -388,7 +416,6 @@
         {/if}
       </section>
     {/if}
-    <p class="muted">{t.noJourneyHistory}</p>
   </div>
   {#if detailOpen}
     <button
