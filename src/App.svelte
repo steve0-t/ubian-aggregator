@@ -3,6 +3,7 @@
   import { name as appName } from "../package.json";
   import Icon from "./lib/Icon.svelte";
   import Timetables from "./lib/Timetables.svelte";
+  import Account from "./lib/Account.svelte";
   import { messages, type Language } from "./lib/i18n";
   import {
     ACCENT_PRESETS,
@@ -313,56 +314,11 @@
             <h1>{t.accountTitle}</h1>
             <p class="page-description">{t.accountDescription}</p>
           </div>
-          <section class="account-panel panel" aria-labelledby="account-title">
-            <span class="account-avatar"><Icon name="user" size={30} /></span>
-            <span class="provider-badge"
-              ><span class="status-dot"></span>www.ubian.sk/login</span
-            >
-            <h2 id="account-title">{t.signIn}</h2>
-            <button
-              class="primary"
-              disabled={!canOpen}
-              onclick={() => open("login")}
-            >
-              {busy ? t.busy : t.openLogin}<Icon name="external" size={17} />
-            </button>
-          </section>
-          {#if !native}
-            <div class="preview-notice">
-              <Icon name="monitor" size={18} />
-              <p>{t.browserPreview}</p>
-            </div>
-          {/if}
-          <div class="information-panel panel">
-            <div class="information-row">
-              <div>
-                <h2>{t.storagePreparation}</h2>
-                <label class="unavailable-option"
-                  ><input type="checkbox" disabled />{t.rememberSession}
-                  <span>{t.unavailableOff}</span></label
-                >
-                <label class="unavailable-option"
-                  ><input type="checkbox" disabled />{t.saveCredentials}
-                  <span>{t.unavailableOff}</span></label
-                >
-                <p>{t.providerLanguage}</p>
-                <p>{t.returnHint}</p>
-              </div>
-            </div>
-            {#each [{ icon: "key", title: t.passwordTitle, description: t.credentials }, { icon: "clock", title: t.sessionTitle, description: t.session }, { icon: "external", title: t.socialTitle, description: t.social }] as item}
-              <div class="information-row">
-                <span class="small-icon"
-                  ><Icon
-                    name={item.icon as "key" | "clock" | "external"}
-                  /></span
-                >
-                <div>
-                  <h2>{item.title}</h2>
-                  <p>{item.description}</p>
-                </div>
-              </div>
-            {/each}
-          </div>
+          <Account
+            {language}
+            canOpenProvider={canOpen}
+            openLogin={() => void open("login")}
+          />
         {:else}
           <div class="page-intro">
             <h1>{t.settings}</h1>

@@ -8,19 +8,18 @@ const sk = {
   signIn: "Prihlásenie",
   account: "Účet",
   settings: "Nastavenia",
-  journeyDescription:
-    "Vyhľadávanie spojení a odchodov priamo v aplikácii sa pripravuje.",
+  journeyDescription: "Vyhľadajte spojenia a odchody priamo v aplikácii.",
   openJourneys: "Otvoriť cestovné poriadky",
   returnHint:
     "Tlačidlo Zavrieť vás vráti do aplikácie. Späť prechádza históriou webu.",
   accountTitle: "Účet Ubian",
   accountDescription:
-    "Prihlásenie prebieha na stránke Ubian. Aplikácia zatiaľ nevie overiť stav prihlásenia.",
+    "Prihláste sa e-mailom a heslom Ubian priamo v aplikácii.",
   openLogin: "Otvoriť prihlásenie Ubian",
   credentials:
-    "Ukladanie a opätovné použitie hesla ešte nie sú dostupné. Heslo zadávajte iba na overenej stránke Ubian.",
+    "Heslo sa odošle priamo do Ubian pri prihlásení a aplikácia ho neukladá.",
   session:
-    "Zapamätanie relácie je vypnuté. Aplikácia žiada vyčistenie webových údajov pred otvorením a po zatvorení. Úplné vymazanie ešte nie je overené. WebView môže zapisovať na disk.",
+    "Webové zobrazenie účtu je oddelené od prihlásenia v aplikácii. Aplikácia žiada vyčistenie webových údajov pred otvorením a po zatvorení. Úplné vymazanie ešte nie je overené. WebView môže zapisovať na disk.",
   social:
     "Sociálne prihlásenie a platby vyžadujú ďalšie overenie. Externý prehliadač nemusí zdieľať reláciu aplikácie.",
   privacy: "Súkromie",
@@ -35,7 +34,7 @@ const sk = {
   spike: "Vývojová verzia · Android integrácia čaká na overenie",
   browserPreview:
     "Náhľad miestneho rozhrania. Otváranie webu a Keystore test vyžadujú Android aplikáciu.",
-  nativeUnavailable: "Táto funkcia vyžaduje Android aplikáciu.",
+  nativeUnavailable: "Táto funkcia vyžaduje nainštalovanú aplikáciu.",
   genericError:
     "Operácia sa nepodarila. Skontrolujte pripojenie alebo stav aplikácie.",
   busy: "Pracuje sa…",
@@ -94,9 +93,6 @@ const sk = {
   rose: "Ružová",
   orange: "Oranžová",
   localStatus: "Dostupné v Android aplikácii",
-  timetableIncomplete: "Cestovné poriadky v aplikácii zatiaľ nie sú dostupné",
-  timetableBlocked:
-    "Prístup k zdroju cestovných poriadkov pre túto aplikáciu ešte nie je potvrdený. Vyhľadávanie spojení, odchody a detaily sa zatiaľ nedajú použiť.",
   noJourneyHistory: "Vyhľadávania sa neukladajú. Účet nie je potrebný.",
   stopQuery: "Názov zastávky",
   lookupStop: "Vyhľadať zastávku",
@@ -119,6 +115,123 @@ const sk = {
   unavailableOff: "Vypnuté · zatiaľ nedostupné",
   systemAppearanceError:
     "Vzhľad aplikácie je nastavený; farby systémových panelov Android sa nepodarilo zmeniť.",
+  origin: "Odkiaľ",
+  destination: "Kam",
+  swapStops: "Vymeniť zastávky",
+  selectStop: "Vyberte zastávku zo zoznamu.",
+  stopSelected: "Zastávka vybraná",
+  searchConnections: "Vyhľadať spojenie",
+  departureBoard: "Odchody zo zastávky",
+  connections: "Spojenia",
+  date: "Dátum",
+  time: "Čas",
+  timetableZone: "Časové pásmo: Europe/Bratislava",
+  departure: "Odchod",
+  arrival: "Príchod",
+  directOnly: "Bez prestupov",
+  transport: "Doprava",
+  allTransport: "Všetky druhy dopravy",
+  bus: "Autobus",
+  train: "Vlak",
+  searchInProgress: "Vyhľadáva sa…",
+  noConnections: "Pre toto vyhľadávanie neboli vrátené žiadne spojenia.",
+  noDepartures: "Pre toto vyhľadávanie neboli vrátené žiadne odchody.",
+  results: "Výsledky",
+  duration: "Trvanie",
+  minutes: "min",
+  transfers: "Prestupy",
+  journeyDetail: "Detail spojenia",
+  backToResults: "Späť na výsledky",
+  walking: "Pešo",
+  line: "Linka",
+  operator: "Dopravca",
+  platform: "Nástupište",
+  scheduled: "Plánovaný cestovný poriadok · živá prevádzka nie je overená",
+  intermediateStops: "Zastávky spoja",
+  loadStopSequence: "Zobraziť zastávky spoja",
+  detailUnavailable:
+    "Doplnenie detailu nie je dostupné. Zobrazené úseky pochádzajú z výsledku vyhľadávania.",
+  detailDateMismatch:
+    "Poskytovateľ vrátil detail pre iný dátum. Zastávky tohto detailu sa nezobrazujú; úseky vyhľadaného spojenia zostávajú dostupné.",
+  invalidTime:
+    "Zadajte platný dátum a čas. Pri zmene letného času vyberte jednoznačný čas.",
+  onlineTimetable: "Online cestovné poriadky Ubian",
+  onlineHint:
+    "Verejné cestovné poriadky bez prihlásenia. Požiadavky sa odosielajú do Ubian.",
+  serviceCancelled: "Spoj je zrušený",
+  chooseOrigin: "Vyberte zastávku odchodu.",
+  chooseBothStops: "Vyberte obe zastávky zo zoznamu.",
+  showDetails: "Zobraziť detail",
+  stopSuggestions: "Nájdené zastávky",
+  providerUnavailable:
+    "Poskytovateľ je momentálne nedostupný. Skúste to znova neskôr.",
+  urban: "Mestská doprava",
+  searchTime: "Hľadať podľa",
+  repeatedHour: "Čas pri prechode na zimný čas",
+  repeatedHourHint:
+    "Opakovaná hodina pri prechode na zimný čas sa vyskytuje dvakrát. Inokedy táto voľba čas nemení.",
+  timeOccurrence: "Výskyt času",
+  firstOccurrence: "Prvý výskyt (skorší)",
+  secondOccurrence: "Druhý výskyt (neskorší)",
+  email: "E-mail",
+  password: "Heslo",
+  nativeLogin: "Prihlásiť sa do Ubian",
+  nativeLoginHint:
+    "Prihlasovacie údaje sa odošlú priamo do Ubian. Aplikácia vaše heslo neukladá.",
+  accountSignedOut: "Nie ste prihlásení.",
+  accountSigningIn: "Prihlasuje sa…",
+  accountSignedIn: "Relácia overená v Ubian",
+  accountExpired: "Platnosť relácie vypršala. Prihláste sa znova.",
+  accountUnverified: "Platnosť relácie nie je aktuálne overená.",
+  accountSummary: "Prehľad účtu",
+  accountLastUpdated: "Naposledy overené",
+  accountCached: "Posledný známy prehľad účtu · údaje môžu byť neaktuálne",
+  accountRefresh: "Overiť reláciu a obnoviť účet",
+  accountLogout: "Odhlásiť sa",
+  accountForget: "Zabudnúť účet",
+  accountForgetHint:
+    "Odstráni miestnu reláciu a uložené údaje účtu. Neodstráni účet v Ubian.",
+  accountRegistrationRecovery: "Registrácia alebo zabudnuté heslo",
+  accountWebsiteHint: "Registrácia a obnova hesla sa otvoria na stránke Ubian.",
+  accountInvalidCredentials: "E-mail alebo heslo nie sú správne.",
+  accountInvalidInput: "Zadajte platný e-mail a heslo.",
+  accountChallenge:
+    "Ubian vyžaduje ďalšie overenie. Dokončite ho na stránke poskytovateľa.",
+  accountSchemaChanged:
+    "Údaje účtu sa nepodarilo bezpečne overiť. Skúste to neskôr.",
+  accountCancelled: "Operácia účtu bola zrušená.",
+  accountOffline:
+    "Nie ste pripojení. Uložené údaje nepotvrdzujú aktuálny stav účtu.",
+  accountTimeout: "Ubian neodpovedal včas. Skúste to znova neskôr.",
+  accountRateLimited: "Príliš veľa pokusov. Počkajte a skúste to znova.",
+  accountUnavailable: "Služba účtu je momentálne nedostupná.",
+  accountRememberHint:
+    "Uloží reláciu a prehľad účtu v šifrovanom úložisku zariadenia. Heslo sa neukladá.",
+  accountSaveSession: "Uložiť aktuálnu reláciu",
+  accountUnlockSession: "Odomknúť uloženú reláciu",
+  accountSessionSaved: "Relácia je uložená v tomto zariadení.",
+  accountSessionMemory: "Relácia zostáva iba v pamäti aplikácie.",
+  accountStorageUnavailable:
+    "Bezpečné uloženie relácie nie je na tomto zariadení dostupné. Prihlásenie bez uloženia funguje ďalej.",
+  accountStorageLocked: "Uložená relácia vyžaduje odomknutie zariadením.",
+  accountUnlockCancelled: "Overenie zariadenia bolo zrušené.",
+  accountLogoutUnconfirmed:
+    "Miestna relácia bola odstránená. Odhlásenie na serveri sa nepodarilo potvrdiť.",
+  accountSessionRemove: "Odstrániť uloženú reláciu",
+  accountSaving: "Ukladá sa relácia…",
+  accountUnlocking: "Odomyká sa relácia…",
+  accountForgotten: "Miestne údaje účtu boli odstránené.",
+  accountLogoutDone: "Ste odhlásení.",
+  accountSessionStoreFailed:
+    "Reláciu sa nepodarilo bezpečne uložiť. Môžete pokračovať bez uloženia.",
+  accountCleanupFailed:
+    "Miestne odhlásenie sa dokončilo, ale uložené údaje môžu zostať v zariadení. Skúste znova možnosť Zabudnúť účet.",
+  accountStorageUnknown:
+    "Stav uložených údajov sa nepodarilo prečítať. Údaje môžu zostať v zariadení; môžete ich skúsiť odstrániť možnosťou Zabudnúť účet.",
+  accountSessionInvalid: "Uložená relácia sa nedá použiť. Prihláste sa znova.",
+  accountActionFailed: "Operácia účtu sa nepodarila. Skúste to znova.",
+  accountRememberOff: "Zapamätanie relácie je predvolene vypnuté.",
+  accountName: "Meno",
 };
 
 type Messages = { [K in keyof typeof sk]: string };
@@ -130,19 +243,18 @@ const en: Messages = {
   signIn: "Sign in",
   account: "Account",
   settings: "Settings",
-  journeyDescription:
-    "In-app connection search and departure boards are in preparation.",
+  journeyDescription: "Find connections and departures inside the app.",
   openJourneys: "Open timetables",
   returnHint:
     "Close returns to the app. Back moves through the website history.",
   accountTitle: "Ubian account",
   accountDescription:
-    "Sign in on the Ubian website. The app cannot verify your login status yet.",
+    "Sign in with your Ubian email and password inside the app.",
   openLogin: "Open Ubian sign-in",
   credentials:
-    "Saving and reusing passwords is not available yet. Enter your password only on the verified Ubian page.",
+    "Your password is sent directly to Ubian when signing in and is not saved by the app.",
   session:
-    "Remember session is off. The app requests website cleanup before opening and after closing. Complete deletion is not verified yet. WebView may write to disk.",
+    "The account website view is separate from signing in inside the app. The app requests website cleanup before opening and after closing. Complete deletion is not verified yet. WebView may write to disk.",
   social:
     "Social sign-in and payments require further verification. The external browser may not share the app session.",
   privacy: "Privacy",
@@ -157,7 +269,7 @@ const en: Messages = {
   spike: "Development build · Android integration awaits verification",
   browserPreview:
     "Local interface preview. Website browsing and the Keystore test require the Android app.",
-  nativeUnavailable: "This feature requires the Android app.",
+  nativeUnavailable: "This feature requires the installed app.",
   genericError:
     "The operation failed. Check your connection or the app status.",
   busy: "Working…",
@@ -215,9 +327,6 @@ const en: Messages = {
   rose: "Rose",
   orange: "Orange",
   localStatus: "Available in the Android app",
-  timetableIncomplete: "In-app timetables are not available yet",
-  timetableBlocked:
-    "Access to the timetable source for this app has not been confirmed. Connection search, departures and details are not available yet.",
   noJourneyHistory: "Searches are not saved. No account is needed.",
   stopQuery: "Stop name",
   lookupStop: "Find a stop",
@@ -240,6 +349,124 @@ const en: Messages = {
   unavailableOff: "Off · not available yet",
   systemAppearanceError:
     "The app appearance is set; Android system bar colors could not be updated.",
+  origin: "From",
+  destination: "To",
+  swapStops: "Swap stops",
+  selectStop: "Choose a stop from the list.",
+  stopSelected: "Stop selected",
+  searchConnections: "Find connections",
+  departureBoard: "Stop departures",
+  connections: "Connections",
+  date: "Date",
+  time: "Time",
+  timetableZone: "Time zone: Europe/Bratislava",
+  departure: "Departure",
+  arrival: "Arrival",
+  directOnly: "Direct only",
+  transport: "Transport",
+  allTransport: "All transport",
+  bus: "Bus",
+  train: "Train",
+  searchInProgress: "Searching…",
+  noConnections: "No connections were returned for this search.",
+  noDepartures: "No departures were returned for this search.",
+  results: "Results",
+  duration: "Duration",
+  minutes: "min",
+  transfers: "Transfers",
+  journeyDetail: "Connection detail",
+  backToResults: "Back to results",
+  walking: "Walk",
+  line: "Line",
+  operator: "Operator",
+  platform: "Platform",
+  scheduled: "Scheduled timetable · live operation is unverified",
+  intermediateStops: "Service stops",
+  loadStopSequence: "Show service stops",
+  detailUnavailable:
+    "Additional detail is unavailable. The displayed legs come from the journey search.",
+  detailDateMismatch:
+    "The provider returned detail for a different date. Its stops are hidden; the searched journey legs remain available.",
+  invalidTime:
+    "Enter a valid date and time. At a daylight saving transition, choose an unambiguous time.",
+  onlineTimetable: "Online Ubian timetables",
+  onlineHint:
+    "Public timetables without signing in. Requests are sent to Ubian.",
+  serviceCancelled: "Service cancelled",
+  chooseOrigin: "Choose a departure stop.",
+  chooseBothStops: "Choose both stops from the list.",
+  showDetails: "Show detail",
+  stopSuggestions: "Matching stops",
+  providerUnavailable:
+    "The provider is temporarily unavailable. Try again later.",
+  urban: "Urban transport",
+  searchTime: "Search by",
+  repeatedHour: "Time at the autumn clock change",
+  repeatedHourHint:
+    "The repeated hour at the autumn clock change occurs twice. This choice has no effect at other times.",
+  timeOccurrence: "Time occurrence",
+  firstOccurrence: "First occurrence (earlier)",
+  secondOccurrence: "Second occurrence (later)",
+  email: "Email",
+  password: "Password",
+  nativeLogin: "Sign in to Ubian",
+  nativeLoginHint:
+    "Your credentials are sent directly to Ubian. The app does not save your password.",
+  accountSignedOut: "You are signed out.",
+  accountSigningIn: "Signing in…",
+  accountSignedIn: "Session verified with Ubian",
+  accountExpired: "Your session expired. Sign in again.",
+  accountUnverified: "The current session validity is unverified.",
+  accountSummary: "Account summary",
+  accountLastUpdated: "Last verified",
+  accountCached: "Last known account summary · information may be out of date",
+  accountRefresh: "Verify session and refresh account",
+  accountLogout: "Sign out",
+  accountForget: "Forget account",
+  accountForgetHint:
+    "Deletes the local session and saved account information. It does not delete your Ubian account.",
+  accountRegistrationRecovery: "Register or reset password",
+  accountWebsiteHint:
+    "Registration and password recovery open on the Ubian website.",
+  accountInvalidCredentials: "The email or password is incorrect.",
+  accountInvalidInput: "Enter a valid email and password.",
+  accountChallenge:
+    "Ubian requires additional verification. Complete it on the provider website.",
+  accountSchemaChanged:
+    "The account information could not be safely verified. Try again later.",
+  accountCancelled: "Account operation cancelled.",
+  accountOffline:
+    "You are offline. Saved information does not confirm the current account status.",
+  accountTimeout: "Ubian did not respond in time. Try again later.",
+  accountRateLimited: "Too many attempts. Wait and try again.",
+  accountUnavailable: "The account service is temporarily unavailable.",
+  accountRememberHint:
+    "Saves your session and account summary in encrypted device storage. Your password is not saved.",
+  accountSaveSession: "Save current session",
+  accountUnlockSession: "Unlock saved session",
+  accountSessionSaved: "The session is saved on this device.",
+  accountSessionMemory: "The session stays in app memory only.",
+  accountStorageUnavailable:
+    "Secure session storage is unavailable on this device. You can still sign in without saving it.",
+  accountStorageLocked: "Unlock the saved session using device authentication.",
+  accountUnlockCancelled: "Device authentication cancelled.",
+  accountLogoutUnconfirmed:
+    "The local session was removed. Server sign-out could not be confirmed.",
+  accountSessionRemove: "Remove saved session",
+  accountSaving: "Saving session…",
+  accountUnlocking: "Unlocking session…",
+  accountForgotten: "Local account information was deleted.",
+  accountLogoutDone: "You are signed out.",
+  accountSessionStoreFailed:
+    "The session could not be saved securely. You can continue without saving it.",
+  accountCleanupFailed:
+    "Local sign-out completed, but saved data may remain on this device. Try Forget account again.",
+  accountStorageUnknown:
+    "Saved-data status could not be read. Data may remain on this device; you can try removing it with Forget account.",
+  accountSessionInvalid: "The saved session cannot be used. Sign in again.",
+  accountActionFailed: "The account operation failed. Try again.",
+  accountRememberOff: "Remember session is off by default.",
+  accountName: "Name",
 };
 
 const uk: Messages = {
@@ -249,19 +476,18 @@ const uk: Messages = {
   signIn: "Вхід",
   account: "Обліковий запис",
   settings: "Налаштування",
-  journeyDescription:
-    "Пошук сполучень і розклади відправлень у застосунку готуються.",
+  journeyDescription: "Шукайте сполучення та відправлення в застосунку.",
   openJourneys: "Відкрити розклади руху",
   returnHint:
     "Кнопка «Закрити» повертає до застосунку. Кнопка «Назад» переглядає історію сайту.",
   accountTitle: "Обліковий запис Ubian",
   accountDescription:
-    "Вхід відбувається на сайті Ubian. Застосунок поки що не може перевірити стан входу.",
+    "Увійдіть за допомогою електронної адреси й пароля Ubian у застосунку.",
   openLogin: "Відкрити вхід до Ubian",
   credentials:
-    "Збереження та повторне використання пароля ще недоступні. Вводьте пароль лише на перевіреній сторінці Ubian.",
+    "Під час входу пароль надсилається безпосередньо до Ubian і не зберігається застосунком.",
   session:
-    "Запам’ятовування сеансу вимкнено. Застосунок запитує очищення даних сайту перед відкриттям і після закриття. Повне видалення ще не перевірено. WebView може записувати дані на диск.",
+    "Перегляд сайту облікового запису відокремлено від входу в застосунку. Застосунок запитує очищення даних сайту перед відкриттям і після закриття. Повне видалення ще не перевірено. WebView може записувати дані на диск.",
   social:
     "Вхід через соціальні мережі й оплата потребують додаткової перевірки. Зовнішній браузер може не використовувати сеанс застосунку.",
   privacy: "Приватність",
@@ -276,7 +502,7 @@ const uk: Messages = {
   spike: "Версія для розробки · інтеграція з Android очікує перевірки",
   browserPreview:
     "Попередній перегляд локального інтерфейсу. Перегляд сайту й перевірка Keystore потребують застосунку Android.",
-  nativeUnavailable: "Ця функція потребує застосунку Android.",
+  nativeUnavailable: "Ця функція потребує встановленого застосунку.",
   genericError:
     "Не вдалося виконати дію. Перевірте з’єднання або стан застосунку.",
   busy: "Триває обробка…",
@@ -335,9 +561,6 @@ const uk: Messages = {
   rose: "Рожевий",
   orange: "Помаранчевий",
   localStatus: "Доступно в застосунку Android",
-  timetableIncomplete: "Розклади руху в застосунку ще недоступні",
-  timetableBlocked:
-    "Доступ цього застосунку до джерела розкладів ще не підтверджено. Пошук сполучень, відправлення та докладні відомості поки що недоступні.",
   noJourneyHistory:
     "Пошукові запити не зберігаються. Обліковий запис не потрібен.",
   stopQuery: "Назва зупинки",
@@ -361,6 +584,127 @@ const uk: Messages = {
   unavailableOff: "Вимкнено · ще недоступно",
   systemAppearanceError:
     "Вигляд застосунку налаштовано; не вдалося оновити кольори системних панелей Android.",
+  origin: "Звідки",
+  destination: "Куди",
+  swapStops: "Поміняти зупинки місцями",
+  selectStop: "Виберіть зупинку зі списку.",
+  stopSelected: "Зупинку вибрано",
+  searchConnections: "Знайти сполучення",
+  departureBoard: "Відправлення із зупинки",
+  connections: "Сполучення",
+  date: "Дата",
+  time: "Час",
+  timetableZone: "Часовий пояс: Europe/Bratislava",
+  departure: "Відправлення",
+  arrival: "Прибуття",
+  directOnly: "Без пересадок",
+  transport: "Транспорт",
+  allTransport: "Усі види транспорту",
+  bus: "Автобус",
+  train: "Поїзд",
+  searchInProgress: "Триває пошук…",
+  noConnections: "За цим запитом сполучень не отримано.",
+  noDepartures: "За цим запитом відправлень не отримано.",
+  results: "Результати",
+  duration: "Тривалість",
+  minutes: "хв",
+  transfers: "Пересадки",
+  journeyDetail: "Відомості про сполучення",
+  backToResults: "Повернутися до результатів",
+  walking: "Пішки",
+  line: "Маршрут",
+  operator: "Перевізник",
+  platform: "Платформа",
+  scheduled: "Плановий розклад · рух у реальному часі не перевірено",
+  intermediateStops: "Зупинки рейсу",
+  loadStopSequence: "Показати зупинки рейсу",
+  detailUnavailable:
+    "Додаткові відомості недоступні. Показані ділянки отримано з пошуку сполучень.",
+  detailDateMismatch:
+    "Постачальник повернув відомості за іншу дату. Їхні зупинки приховано; ділянки знайденого сполучення залишаються доступними.",
+  invalidTime:
+    "Введіть дійсні дату й час. Під час переходу на літній час виберіть однозначний час.",
+  onlineTimetable: "Онлайн-розклади Ubian",
+  onlineHint:
+    "Загальнодоступні розклади без входу. Запити надсилаються до Ubian.",
+  serviceCancelled: "Рейс скасовано",
+  chooseOrigin: "Виберіть зупинку відправлення.",
+  chooseBothStops: "Виберіть обидві зупинки зі списку.",
+  showDetails: "Показати відомості",
+  stopSuggestions: "Знайдені зупинки",
+  providerUnavailable: "Постачальник тимчасово недоступний. Спробуйте пізніше.",
+  urban: "Міський транспорт",
+  searchTime: "Шукати за",
+  repeatedHour: "Час під час осіннього переведення годинника",
+  repeatedHourHint:
+    "Під час осіннього переведення годинника година повторюється двічі. В інший час цей вибір не впливає на час.",
+  timeOccurrence: "Повторення часу",
+  firstOccurrence: "Перший раз (раніше)",
+  secondOccurrence: "Другий раз (пізніше)",
+  email: "Електронна адреса",
+  password: "Пароль",
+  nativeLogin: "Увійти до Ubian",
+  nativeLoginHint:
+    "Облікові дані надсилаються безпосередньо до Ubian. Застосунок не зберігає ваш пароль.",
+  accountSignedOut: "Ви не ввійшли в обліковий запис.",
+  accountSigningIn: "Виконується вхід…",
+  accountSignedIn: "Сеанс перевірено в Ubian",
+  accountExpired: "Термін дії сеансу минув. Увійдіть знову.",
+  accountUnverified: "Поточну дійсність сеансу не перевірено.",
+  accountSummary: "Огляд облікового запису",
+  accountLastUpdated: "Остання перевірка",
+  accountCached:
+    "Останній відомий огляд облікового запису · дані можуть бути застарілими",
+  accountRefresh: "Перевірити сеанс і оновити обліковий запис",
+  accountLogout: "Вийти",
+  accountForget: "Забути обліковий запис",
+  accountForgetHint:
+    "Видаляє локальний сеанс і збережені дані облікового запису. Обліковий запис Ubian не видаляється.",
+  accountRegistrationRecovery: "Зареєструватися або відновити пароль",
+  accountWebsiteHint:
+    "Реєстрація та відновлення пароля відкриваються на сайті Ubian.",
+  accountInvalidCredentials: "Неправильна електронна адреса або пароль.",
+  accountInvalidInput: "Введіть дійсні електронну адресу та пароль.",
+  accountChallenge:
+    "Ubian вимагає додаткової перевірки. Пройдіть її на сайті постачальника.",
+  accountSchemaChanged:
+    "Не вдалося безпечно перевірити дані облікового запису. Спробуйте пізніше.",
+  accountCancelled: "Дію з обліковим записом скасовано.",
+  accountOffline:
+    "Немає з’єднання. Збережені дані не підтверджують поточний стан облікового запису.",
+  accountTimeout: "Ubian не відповів вчасно. Спробуйте пізніше.",
+  accountRateLimited: "Забагато спроб. Зачекайте та спробуйте ще раз.",
+  accountUnavailable: "Служба облікових записів тимчасово недоступна.",
+  accountRememberHint:
+    "Зберігає сеанс і огляд облікового запису в зашифрованому сховищі пристрою. Пароль не зберігається.",
+  accountSaveSession: "Зберегти поточний сеанс",
+  accountUnlockSession: "Розблокувати збережений сеанс",
+  accountSessionSaved: "Сеанс збережено на цьому пристрої.",
+  accountSessionMemory: "Сеанс залишається лише в пам’яті застосунку.",
+  accountStorageUnavailable:
+    "Безпечне зберігання сеансу недоступне на цьому пристрої. Ви можете ввійти без збереження.",
+  accountStorageLocked:
+    "Розблокуйте збережений сеанс за допомогою автентифікації пристрою.",
+  accountUnlockCancelled: "Автентифікацію пристрою скасовано.",
+  accountLogoutUnconfirmed:
+    "Локальний сеанс видалено. Вихід на сервері не вдалося підтвердити.",
+  accountSessionRemove: "Видалити збережений сеанс",
+  accountSaving: "Сеанс зберігається…",
+  accountUnlocking: "Сеанс розблоковується…",
+  accountForgotten: "Локальні дані облікового запису видалено.",
+  accountLogoutDone: "Ви вийшли з облікового запису.",
+  accountSessionStoreFailed:
+    "Не вдалося безпечно зберегти сеанс. Ви можете продовжити без збереження.",
+  accountCleanupFailed:
+    "Локальний вихід завершено, але збережені дані можуть залишатися на пристрої. Спробуйте ще раз вибрати «Забути обліковий запис».",
+  accountStorageUnknown:
+    "Не вдалося прочитати стан збережених даних. Дані можуть залишатися на пристрої; спробуйте видалити їх через «Забути обліковий запис».",
+  accountSessionInvalid:
+    "Збережений сеанс не можна використати. Увійдіть знову.",
+  accountActionFailed:
+    "Не вдалося виконати дію з обліковим записом. Спробуйте знову.",
+  accountRememberOff: "Запам’ятовування сеансу початково вимкнено.",
+  accountName: "Ім’я",
 };
 
 export const messages: Record<Language, Messages> = { sk, en, uk };

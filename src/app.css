@@ -1556,3 +1556,301 @@ dd {
   color: var(--muted);
   font-size: 0.8125rem;
 }
+
+.timetable-panel [hidden] {
+  display: none;
+}
+
+.timetable-panel input[type="date"],
+.timetable-panel input[type="time"],
+.timetable-panel select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0.65rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+}
+
+.timetable-panel label {
+  font-size: 0.875rem;
+}
+
+.timetable-modes,
+.timetable-options,
+.search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.timetable-panel .timetable-modes label,
+.timetable-panel .direct-option {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 48px;
+}
+
+.timetable-modes {
+  margin-block: 1rem;
+}
+
+.timetable-modes input,
+.direct-option input {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accent);
+}
+
+.timetable-options > label {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+
+.timetable-options input,
+.timetable-options select {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.route-fields {
+  margin-block: 1rem 1.5rem;
+}
+
+.stop-field {
+  min-width: 0;
+}
+
+.stop-search .stop-lookup {
+  flex: 0 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.stop-feedback {
+  min-height: 1.3em;
+  margin: 0.4rem 0;
+}
+
+.stop-suggestions,
+.journey-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stop-suggestions {
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+
+.stop-suggestions button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.stop-suggestions li + li {
+  border-top: 1px solid var(--border);
+}
+
+.stop-suggestions button:hover,
+.journey-result:hover {
+  background: var(--surface-hover);
+}
+
+.swap-stops {
+  margin-block: 0.5rem;
+}
+
+.time-occurrence {
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.time-occurrence label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-occurrence select {
+  flex: 1 1 15rem;
+  width: auto;
+}
+
+.search-actions {
+  margin-block: 1rem;
+}
+
+.search-actions > button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.timetable-results {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.result-route {
+  overflow-wrap: anywhere;
+}
+
+.journey-results > li + li {
+  margin-top: 0.75rem;
+}
+
+.journey-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.journey-result > span {
+  max-width: 100%;
+  font-size: 0.8125rem;
+}
+
+.journey-times {
+  max-width: 100%;
+  font-size: 1.125rem;
+}
+
+.detail-link {
+  margin-top: 0.4rem;
+  color: var(--accent-text);
+}
+
+.back-results {
+  margin-bottom: 1.25rem;
+}
+
+.journey-legs {
+  margin-block: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.journey-legs > li {
+  padding-block: 0.75rem 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.journey-legs > li + li {
+  border-top: 1px solid var(--border);
+}
+
+.journey-legs p,
+.service-stops li {
+  margin-block: 0.5rem;
+}
+
+.journey-legs .secondary {
+  margin-block: 0.75rem;
+}
+
+.service-stops {
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.native-account {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.native-account label {
+  display: block;
+  margin-block: 1rem;
+  font-size: 0.875rem;
+}
+
+.native-account input[type="email"],
+.native-account input[type="password"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  margin-top: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+}
+
+.native-account h2,
+.native-account h3,
+.native-account p,
+.native-account button {
+  overflow-wrap: anywhere;
+}
+
+.account-state,
+.account-message {
+  margin-block: 1rem;
+}
+
+.account-error {
+  color: var(--error);
+}
+
+.account-cache-label {
+  margin-block: 0.75rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.account-summary,
+.account-storage,
+.account-provider-links {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.account-summary dl {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.4rem;
+}
+
+.account-summary dd {
+  margin-bottom: 0.6rem;
+  text-align: start;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+
+.account-actions button,
+.native-account form button,
+.account-provider-links button {
+  max-width: 100%;
+}
+
+.account-cancel {
+  margin-top: 0.75rem;
+}

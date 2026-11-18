@@ -81,9 +81,7 @@ try {
     0,
   );
   assert.equal(await page.locator(".header-actions button").count(), 0);
-  await page
-    .getByRole("heading", { name: "Розклади руху в застосунку ще недоступні" })
-    .waitFor();
+  await page.getByRole("heading", { name: "Онлайн-розклади Ubian" }).waitFor();
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.evaluate(() => (document.documentElement.style.fontSize = "100%"));
