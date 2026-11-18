@@ -295,21 +295,7 @@
         {/if}
 
         {#if tab === "journeys"}
-          <div class="journeys-hero">
-            <div class="journeys-intro">
-              <h1>{t.onlineTimetable}</h1>
-              <p>{t.onlineHint}</p>
-            </div>
-            <div class="transit-art" aria-hidden="true">
-              <span class="transit-track track-main"></span>
-              <span class="transit-track track-branch"></span>
-              <span class="transit-track track-cross"></span>
-              <span class="transit-station station-first"></span>
-              <span class="transit-station station-transfer"></span>
-              <span class="transit-station station-last"></span>
-            </div>
-          </div>
-
+          <h1 class="sr-only">{t.timetables}</h1>
           <div class="journeys-grid">
             <Timetables {language} />
 

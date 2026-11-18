@@ -81,7 +81,8 @@ try {
     0,
   );
   assert.equal(await page.locator(".header-actions button").count(), 0);
-  await page.getByRole("heading", { name: "Онлайн-розклади Ubian" }).waitFor();
+  await page.locator(".timetable-panel").waitFor();
+  assert.equal(await page.getByText("Онлайн-розклади Ubian").count(), 0);
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.evaluate(() => (document.documentElement.style.fontSize = "100%"));

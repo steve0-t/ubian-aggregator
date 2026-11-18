@@ -58,6 +58,7 @@
   let detailError = $state<SearchError | null>(null);
   let detailLoading = $state<string | null>(null);
   let resultsScroll = 0;
+  let resultsHeading = $state<HTMLHeadingElement>();
   let returnFocus: HTMLElement | null = null;
   let detailHeading = $state<HTMLHeadingElement>();
   const requests = new SearchRequest(cancelRequest);
@@ -117,7 +118,16 @@
           },
           requests.requestId(ticket),
         );
-        if (requests.current(ticket)) journeys = response;
+        if (!requests.current(ticket)) return;
+        journeys = response;
+        await tick();
+        if (requests.current(ticket)) {
+          resultsHeading?.focus({ preventScroll: true });
+          resultsHeading?.scrollIntoView({
+            behavior: "instant",
+            block: "start",
+          });
+        }
       } else {
         const response = await stopDepartures(
           { ...common, stop: queryOrigin },
@@ -340,7 +350,9 @@
     </form>
     {#if journeys !== null || departures !== null}
       <section class="timetable-results" aria-labelledby="results-title">
-        <h3 id="results-title">{t.results}</h3>
+        <h2 id="results-title" tabindex="-1" bind:this={resultsHeading}>
+          {t.results}
+        </h2>
         <p class="result-route">
           {resultOrigin}{#if resultMode === "connections"}
             → {resultDestination}{/if}

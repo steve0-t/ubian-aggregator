@@ -479,114 +479,6 @@ main:focus {
   padding-top: 1.75rem;
 }
 
-.journeys-hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: center;
-  min-height: 12rem;
-  overflow: hidden;
-  margin-bottom: 1.25rem;
-  padding: 1.5rem 2rem;
-  border-radius: 20px;
-  color: #ffffff;
-  background: radial-gradient(ellipse at 90% 0%, #215d43, #133b2c 72%);
-}
-
-.journeys-intro {
-  position: relative;
-  z-index: 1;
-  max-width: 65%;
-  overflow-wrap: anywhere;
-}
-
-.journeys-intro h1 {
-  font-size: clamp(1.875rem, 3.45vw, 3rem);
-  line-height: 1.08;
-  text-wrap: balance;
-}
-
-.journeys-intro p {
-  max-width: 28rem;
-  margin-top: 0.8rem;
-  color: #d4eadb;
-  font-size: 0.875rem;
-}
-
-.transit-art {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 25rem;
-  height: 15rem;
-  transform: translateY(-50%);
-  background-image:
-    linear-gradient(90deg, #ffffff18 1px, transparent 1px),
-    linear-gradient(#ffffff18 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
-  mask-image: linear-gradient(90deg, transparent, #000 20%);
-  pointer-events: none;
-}
-
-.transit-track,
-.transit-station {
-  position: absolute;
-}
-
-.track-main {
-  inset: 2rem auto auto 4rem;
-  width: 15rem;
-  height: 8rem;
-  border-right: 4px solid #81e8ac;
-  border-bottom: 4px solid #81e8ac;
-  border-bottom-right-radius: 4rem;
-}
-
-.track-branch {
-  inset: -1rem auto auto 11rem;
-  width: 15rem;
-  height: 8.25rem;
-  border-bottom: 3px solid #74b6ac;
-  border-left: 3px solid #74b6ac;
-  border-bottom-left-radius: 3rem;
-}
-
-.track-cross {
-  inset: 5.5rem auto auto 7.5rem;
-  width: 18rem;
-  height: 10rem;
-  border-top: 3px solid #dbba73;
-  border-left: 3px solid #dbba73;
-  border-top-left-radius: 3rem;
-}
-
-.transit-station {
-  width: 13px;
-  height: 13px;
-  border: 3px solid #81e8ac;
-  border-radius: 50%;
-  background: #194a35;
-  transform: translate(-50%, -50%);
-}
-
-.station-first {
-  left: 4.3rem;
-  top: calc(10rem - 2px);
-}
-
-.station-transfer {
-  left: calc(7.5rem + 1.5px);
-  top: calc(10rem - 2px);
-  width: 17px;
-  height: 17px;
-  border-color: #ffffff;
-}
-
-.station-last {
-  left: calc(19rem - 2px);
-  top: 3rem;
-}
-
 .journeys-grid {
   display: grid;
   grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr);
@@ -1420,31 +1312,6 @@ dd {
     width: 100%;
   }
 
-  .journeys-hero {
-    min-height: 8rem;
-    margin-bottom: 0.875rem;
-    padding: 16px 20px;
-    border-radius: 16px;
-  }
-
-  .journeys-intro {
-    max-width: 100%;
-  }
-
-  .journeys-intro p {
-    margin-top: 0.6rem;
-  }
-
-  .journeys-intro h1 {
-    font-size: 1.75rem;
-  }
-
-  .transit-art {
-    right: -11rem;
-    opacity: 0.4;
-    mask-image: linear-gradient(90deg, transparent 45%, #000 75%);
-  }
-
   .journeys-grid {
     gap: 0.875rem;
   }
@@ -2074,6 +1941,11 @@ dd {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
+}
+
+.timetable-results h2 {
+  margin-bottom: 0.5rem;
+  scroll-margin-top: 1rem;
 }
 
 .result-route {
