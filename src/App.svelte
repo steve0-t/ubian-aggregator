@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick, untrack } from "svelte";
-  import { name as appName } from "../package.json";
+  import { name as appName, version } from "../package.json";
   import Icon from "./lib/Icon.svelte";
   import Timetables from "./lib/Timetables.svelte";
   import Account from "./lib/Account.svelte";
@@ -297,7 +297,7 @@
             ? t.androidLabel
             : t.browserLabel}</span
         >
-        <span class="version">v0.1.0</span>
+        <span class="version">v{version}</span>
       </div>
     </div>
   </aside>
@@ -628,7 +628,7 @@
             ><Icon name="route" size={16} />{appName}</span
           >
           <p>{t.unofficial}</p>
-          <span class="footer-version">v0.1.0</span>
+          <span class="footer-version">v{version}</span>
         </footer>
       </div>
     </main>

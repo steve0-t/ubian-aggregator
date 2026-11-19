@@ -2,7 +2,7 @@
 
 An unofficial Android client for [Ubian](https://www.ubian.sk/), using Rust, Tauri 2, Svelte and TypeScript. ubian-aggregator is not affiliated with Ubian.
 
-Download the [v0.2.1 ARM64 debug preview](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.1) with the redesigned timetable interface. The [v0.2.0 preview](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.2.0) and [initial v0.1.0 build](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.1.0) are also available. Each release includes an APK, SHA-256 checksums, description and changelog. These builds require Android 8.0 or newer. Android device acceptance remains outstanding.
+Download the [v0.3.0 ARM64 debug preview](https://github.com/steve0-t/ubian-aggregator/releases/tag/v0.3.0) with separate Search and Journeys tabs and swipe navigation. Each release includes an APK, a SHA-256 checksum, and a changelog. These builds require Android 8.0 or newer. Android device acceptance remains outstanding. Earlier versions are available on [GitHub Releases](https://github.com/steve0-t/ubian-aggregator/releases).
 
 **Revision 2 implements native online guest timetable search.** The bundled Svelte interface uses a narrow Rust Ubian adapter for real stop selection, journeys and departure boards, without login or a website handoff. It keeps searches in memory and labels results as scheduled data. Connection-detail enrichment is date-checked: Ubian currently returns a previous-day stop sequence for the tested trips, so that enrichment is unavailable while search legs remain usable. See [implementation status](docs/implementation-status.md) and [verification](docs/revision-2-verification.md).
 
