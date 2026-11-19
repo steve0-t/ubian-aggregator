@@ -3,7 +3,9 @@ export type Language = "sk" | "en" | "uk";
 const sk = {
   unofficial:
     "Neoficiálny klient Ubian. Bez prepojenia na prevádzkovateľa Ubian.",
+  search: "Vyhľadávanie",
   journeys: "Cesty",
+  journeysEmpty: "Vyhľadajte spojenie alebo odchody a výsledky sa zobrazia tu.",
   timetables: "Cestovné poriadky",
   signIn: "Prihlásenie",
   account: "Účet",
@@ -138,7 +140,6 @@ const sk = {
   searchInProgress: "Vyhľadáva sa…",
   noConnections: "Pre toto vyhľadávanie neboli vrátené žiadne spojenia.",
   noDepartures: "Pre toto vyhľadávanie neboli vrátené žiadne odchody.",
-  results: "Výsledky",
   duration: "Trvanie",
   minutes: "min",
   transfers: "Prestupy",
@@ -237,7 +238,9 @@ type Messages = { [K in keyof typeof sk]: string };
 
 const en: Messages = {
   unofficial: "An unofficial Ubian client. Not affiliated with Ubian.",
+  search: "Search",
   journeys: "Journeys",
+  journeysEmpty: "Search for connections or departures to see them here.",
   timetables: "Timetables",
   signIn: "Sign in",
   account: "Account",
@@ -370,7 +373,6 @@ const en: Messages = {
   searchInProgress: "Searching…",
   noConnections: "No connections were returned for this search.",
   noDepartures: "No departures were returned for this search.",
-  results: "Results",
   duration: "Duration",
   minutes: "min",
   transfers: "Transfers",
@@ -468,7 +470,9 @@ const en: Messages = {
 
 const uk: Messages = {
   unofficial: "Неофіційний клієнт Ubian. Не пов’язаний з оператором Ubian.",
+  search: "Пошук",
   journeys: "Поїздки",
+  journeysEmpty: "Знайдіть сполучення або відправлення, щоб побачити їх тут.",
   timetables: "Розклади руху",
   signIn: "Вхід",
   account: "Обліковий запис",
@@ -604,7 +608,6 @@ const uk: Messages = {
   searchInProgress: "Триває пошук…",
   noConnections: "За цим запитом сполучень не отримано.",
   noDepartures: "За цим запитом відправлень не отримано.",
-  results: "Результати",
   duration: "Тривалість",
   minutes: "хв",
   transfers: "Пересадки",

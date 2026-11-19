@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, untrack } from "svelte";
+  import { onMount, tick, untrack } from "svelte";
   import { name as appName } from "../package.json";
   import Icon from "./lib/Icon.svelte";
   import Timetables from "./lib/Timetables.svelte";
@@ -32,12 +32,13 @@
   }: { initialPreferences: Preferences; initialThemeSaved: boolean } = $props();
   const startingPreferences = untrack(() => initialPreferences);
 
-  type Tab = "journeys" | "account" | "settings";
   const navigation = [
+    { id: "search", icon: "search" },
     { id: "journeys", icon: "bus" },
     { id: "account", icon: "user" },
     { id: "settings", icon: "settings" },
   ] as const;
+  type Tab = (typeof navigation)[number]["id"];
   const themes = [
     { id: "system", label: "systemTheme", icon: "monitor" },
     { id: "light", label: "lightTheme", icon: "sun" },
@@ -53,7 +54,8 @@
   let deviceThemeSaved = $state(untrack(() => initialThemeSaved));
   let themeSave = Promise.resolve(true);
   let systemAppearanceFailed = $state(false);
-  let tab = $state<Tab>("journeys");
+  let tab = $state<Tab>("search");
+  let swipeStart: { id: number; x: number; y: number; tab: Tab } | undefined;
   let busy = $state(false);
   let notice = $state<"opened" | "genericError" | "nativeUnavailable" | null>(
     null,
@@ -65,6 +67,9 @@
     browserPreferencesSaved && deviceThemeSaved,
   );
   const t = $derived(messages[language]);
+  const timetablePage = $derived(
+    tab === "search" || tab === "journeys" ? tab : null,
+  );
   const invalidAccent = $derived(!isAccent(accentInput));
   const canOpen = $derived(
     native &&
@@ -84,6 +89,48 @@
     tab = next;
     notice = null;
     window.scrollTo({ top: 0 });
+  }
+
+  function showJourneys() {
+    if (timetablePage) selectTab("journeys");
+  }
+
+  function startSwipe(event: PointerEvent) {
+    if (event.pointerType !== "touch") return;
+    swipeStart = undefined;
+    if (
+      !event.isPrimary ||
+      (event.target instanceof Element &&
+        event.target.closest("input, select, textarea, [contenteditable]"))
+    )
+      return;
+    swipeStart = {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      tab,
+    };
+  }
+
+  function cancelSwipe(event: PointerEvent) {
+    if (swipeStart?.id === event.pointerId) swipeStart = undefined;
+  }
+
+  async function finishSwipe(event: PointerEvent) {
+    if (!swipeStart || swipeStart.id !== event.pointerId) return;
+    const start = swipeStart;
+    swipeStart = undefined;
+    if (start.tab !== tab) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) <= Math.abs(dy) * 1.5) return;
+    const index = navigation.findIndex((item) => item.id === tab);
+    const next = navigation[index + (dx < 0 ? 1 : -1)];
+    if (!next) return;
+    selectTab(next.id);
+    await tick();
+    if (tab === next.id)
+      document.getElementById("main")?.focus({ preventScroll: true });
   }
 
   function selectAccent(color: string) {
@@ -208,7 +255,7 @@
   <aside class="sidebar">
     <button
       class="brand"
-      onclick={() => selectTab("journeys")}
+      onclick={() => selectTab("search")}
       aria-label={appName}
     >
       <span class="brand-mark"><Icon name="route" size={25} /></span>
@@ -255,11 +302,18 @@
     </div>
   </aside>
 
-  <div class="workspace" class:journeys-workspace={tab === "journeys"}>
+  <!-- svelte-ignore a11y_no_static_element_interactions (The navigation buttons also switch pages.) -->
+  <div
+    class="workspace"
+    class:journeys-workspace={timetablePage !== null}
+    onpointerdown={startSwipe}
+    onpointerup={finishSwipe}
+    onpointercancel={cancelSwipe}
+  >
     <header class="workspace-header">
       <button
         class="mobile-brand"
-        onclick={() => selectTab("journeys")}
+        onclick={() => selectTab("search")}
         aria-label={appName}
       >
         <span class="brand-mark"><Icon name="route" size={22} /></span>
@@ -270,7 +324,7 @@
           >{t[tab]}</span
         >
       </div>
-      {#if tab !== "journeys"}
+      {#if !timetablePage}
         <div class="header-actions">
           <span class="build-badge"
             ><span class="status-dot"></span>{t.developmentLabel}</span
@@ -294,44 +348,35 @@
           </div>
         {/if}
 
-        {#if tab === "journeys"}
-          <h1 class="sr-only">{t.timetables}</h1>
-          <div class="journeys-grid">
-            <Timetables {language} />
+        <div class:search-grid={tab === "search"} hidden={!timetablePage}>
+          <Timetables
+            {language}
+            page={timetablePage}
+            onresults={showJourneys}
+          />
+          {#if tab === "search"}
+            <section
+              class="privacy-summary panel"
+              aria-labelledby="privacy-title"
+            >
+              <div class="privacy-heading">
+                <Icon name="shield" size={20} />
+                <h2 id="privacy-title">{t.privacy}</h2>
+              </div>
+              <p>{t.noJourneyHistory}</p>
+              <details>
+                <summary>
+                  {t.privacyDetails}<Icon name="chevron" size={14} />
+                </summary>
+                <p>{t.privacyDescription}</p>
+                <p>{t.rulesPending}</p>
+                <p>{t.limits}</p>
+              </details>
+            </section>
+          {/if}
+        </div>
 
-            <div class="journeys-links">
-              <button
-                class="quick-card panel"
-                onclick={() => selectTab("account")}
-              >
-                <span class="card-icon accent-icon">
-                  <Icon name="user" size={22} />
-                </span>
-                <strong>{t.accountTitle}</strong>
-                <Icon name="arrow" size={19} />
-              </button>
-
-              <section
-                class="privacy-summary panel"
-                aria-labelledby="privacy-title"
-              >
-                <div class="privacy-heading">
-                  <Icon name="shield" size={20} />
-                  <h2 id="privacy-title">{t.privacy}</h2>
-                </div>
-                <p>{t.noJourneyHistory}</p>
-                <details>
-                  <summary>
-                    {t.privacyDetails}<Icon name="chevron" size={14} />
-                  </summary>
-                  <p>{t.privacyDescription}</p>
-                  <p>{t.rulesPending}</p>
-                  <p>{t.limits}</p>
-                </details>
-              </section>
-            </div>
-          </div>
-        {:else if tab === "account"}
+        {#if tab === "account"}
           <div class="page-intro">
             <h1>{t.accountTitle}</h1>
             <p class="page-description">{t.accountDescription}</p>
@@ -341,7 +386,7 @@
             canOpenProvider={canOpen}
             openLogin={() => void open("login")}
           />
-        {:else}
+        {:else if tab === "settings"}
           <div class="page-intro">
             <h1>{t.settings}</h1>
           </div>

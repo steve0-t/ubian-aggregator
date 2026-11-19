@@ -289,6 +289,8 @@ h3 {
 
 .workspace {
   margin-left: 250px;
+  min-height: 100dvh;
+  touch-action: pan-y pinch-zoom;
 }
 
 .workspace-header {
@@ -479,35 +481,11 @@ main:focus {
   padding-top: 1.75rem;
 }
 
-.journeys-grid {
+.search-grid {
   display: grid;
   grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr);
   align-items: start;
   gap: 1.25rem;
-}
-
-.journeys-links {
-  display: grid;
-  align-items: start;
-  gap: 0.875rem;
-}
-
-.quick-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.75rem;
-  padding: 1rem;
-}
-
-.quick-card strong {
-  font-size: 0.875rem;
-  font-weight: 650;
-  overflow-wrap: anywhere;
-}
-
-.quick-card:hover {
-  border-color: var(--accent-border);
-  background: var(--surface-secondary);
 }
 
 .card-icon {
@@ -525,10 +503,6 @@ main:focus {
 .card-icon.accent-icon {
   color: var(--accent-text);
   background: var(--accent-soft);
-}
-
-.quick-card > svg {
-  color: var(--accent-text);
 }
 
 .privacy-summary {
@@ -1167,12 +1141,8 @@ dd {
 }
 
 @media (max-width: 1000px) {
-  .journeys-grid {
+  .search-grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .journeys-links {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
   }
 }
 
@@ -1228,7 +1198,7 @@ dd {
     inset: auto 0 0;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
     padding: 8px max(12px, env(safe-area-inset-right))
       max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
@@ -1312,7 +1282,7 @@ dd {
     width: 100%;
   }
 
-  .journeys-grid {
+  .search-grid {
     gap: 0.875rem;
   }
 
@@ -1513,6 +1483,11 @@ dd {
 
 .timetable-panel h3 {
   margin-bottom: 0.5rem;
+}
+
+.timetable-panel h1 {
+  margin-bottom: 0.75rem;
+  font-size: 1.375rem;
 }
 
 .timetable-panel [hidden] {
@@ -1937,15 +1912,8 @@ dd {
   }
 }
 
-.timetable-results {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-
-.timetable-results h2 {
-  margin-bottom: 0.5rem;
-  scroll-margin-top: 1rem;
+.timetable-results .journey-results {
+  margin-top: 0.75rem;
 }
 
 .result-route {

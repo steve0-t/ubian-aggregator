@@ -21,7 +21,7 @@ try {
     waitUntil: "domcontentloaded",
     timeout: 60000,
   });
-  await page.locator(".mobile-navigation button").nth(2).click();
+  await page.locator(".mobile-navigation button").last().click();
   await page.locator("#language").selectOption("uk");
   await page
     .locator(".theme-option")
@@ -42,7 +42,7 @@ try {
   await page.emulateMedia({ colorScheme: "dark" });
   assert.equal(await page.locator("html").getAttribute("data-theme"), "black");
   await page.reload();
-  await page.locator(".mobile-navigation button").nth(2).click();
+  await page.locator(".mobile-navigation button").last().click();
   assert.equal(await page.locator("#language").inputValue(), "uk");
   assert.equal(
     await page.locator('input[name="theme"]:checked').inputValue(),
@@ -81,13 +81,15 @@ try {
     0,
   );
   assert.equal(await page.locator(".header-actions button").count(), 0);
-  await page.locator(".timetable-panel").waitFor();
+  await page.getByRole("heading", { name: "Пошук", exact: true }).waitFor();
   assert.equal(await page.getByText("Онлайн-розклади Ubian").count(), 0);
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.evaluate(() => (document.documentElement.style.fontSize = "100%"));
-  await page.locator(".sidebar nav button").nth(2).click();
-  const focusTarget = page.locator(".sidebar nav button").nth(1);
+  await page.locator(".sidebar nav button").last().click();
+  const focusTarget = page
+    .locator(".sidebar nav")
+    .getByRole("button", { name: "Обліковий запис", exact: true });
   await focusTarget.focus();
   // Keyboard interaction keeps focus and aria-current.
   await page.keyboard.press("Enter");
@@ -119,7 +121,7 @@ try {
   );
   await page.setViewportSize({ width: 320, height: 800 });
   await page.evaluate(() => (document.documentElement.style.fontSize = "200%"));
-  await page.locator(".mobile-navigation button").nth(2).click();
+  await page.locator(".mobile-navigation button").last().click();
   assert.equal(
     await page.evaluate(
       () =>

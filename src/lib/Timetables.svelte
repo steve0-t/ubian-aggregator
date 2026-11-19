@@ -28,7 +28,15 @@
     type SearchError,
   } from "./timetable-state";
 
-  let { language }: { language: Language } = $props();
+  let {
+    language,
+    page,
+    onresults,
+  }: {
+    language: Language;
+    page: "search" | "journeys" | null;
+    onresults: () => void;
+  } = $props();
   const t = $derived(messages[language]);
   const native = isNative();
   const initialTime = timetableInput();
@@ -120,29 +128,27 @@
         );
         if (!requests.current(ticket)) return;
         journeys = response;
-        await tick();
-        if (requests.current(ticket)) {
-          resultsHeading?.focus({ preventScroll: true });
-          resultsHeading?.scrollIntoView({
-            behavior: "instant",
-            block: "start",
-          });
-        }
       } else {
         const response = await stopDepartures(
           { ...common, stop: queryOrigin },
           requests.requestId(ticket),
         );
-        if (requests.current(ticket)) departures = response;
+        if (!requests.current(ticket)) return;
+        departures = response;
       }
     } catch (failure) {
       if (requests.current(ticket)) error = searchError(failure);
+      return;
     } finally {
       if (requests.current(ticket)) {
         loading = false;
         requests.finish(ticket);
       }
     }
+    onresults();
+    await tick();
+    if (requests.current(ticket) && page === "journeys")
+      resultsHeading?.focus({ preventScroll: true });
   }
   async function openDetail(
     journey: Journey | null,
@@ -154,7 +160,8 @@
     detailRequests.cancel();
     detailLoading = null;
     detailError = null;
-    history.pushState({ ...history.state, timetableDetail: true }, "");
+    if (!history.state?.timetableDetail)
+      history.pushState({ ...history.state, timetableDetail: true }, "");
     selectedJourney = journey;
     selectedDeparture = departure;
     await tick();
@@ -164,16 +171,26 @@
   function back() {
     history.back();
   }
-  async function closeDetail() {
+  function clearDetail() {
     detailRequests.cancel();
     detailLoading = null;
     detailError = null;
     selectedJourney = null;
     selectedDeparture = null;
+  }
+  async function closeDetail() {
+    clearDetail();
     await tick();
+    if (page !== "journeys") return;
     returnFocus?.focus({ preventScroll: true });
     window.scrollTo({ top: resultsScroll });
   }
+  $effect(() => {
+    if (page !== "journeys" && detailOpen) {
+      clearDetail();
+      if (history.state?.timetableDetail) history.back();
+    }
+  });
   async function loadDetail(token: string) {
     const ticket = detailRequests.begin();
     detailLoading = token;
@@ -195,8 +212,8 @@
     }
   }
   onMount(() => {
-    const onBack = () => {
-      if (detailOpen) void closeDetail();
+    const onBack = (event: PopStateEvent) => {
+      if (detailOpen && !event.state?.timetableDetail) void closeDetail();
     };
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
@@ -207,226 +224,240 @@
   });
 </script>
 
-<section class="timetable-panel panel" aria-label={t.timetables}>
-  <div hidden={detailOpen}>
-    <form onsubmit={search} aria-busy={loading}>
-      <fieldset class="timetable-modes">
-        <legend class="sr-only">{t.timetables}</legend>
-        <label>
-          <input
-            type="radio"
-            name="timetable-mode"
-            value="connections"
-            bind:group={mode}
-          />
-          <Icon name="bus" size={19} />
-          <span>{t.connections}</span>
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="timetable-mode"
-            value="departureBoard"
-            bind:group={mode}
-            aria-label={t.departureBoard}
-          />
-          <Icon name="clock" size={19} />
-          <span>{t.departuresLabel}</span>
-        </label>
-      </fieldset>
-      <div class="route-fields">
-        <div class="route-stops">
-          <StopField
-            id="origin-stop"
-            label={t.origin}
-            {language}
-            bind:value={originText}
-            bind:selected={origin}
-          />
-          {#if mode === "connections"}
-            <StopField
-              id="destination-stop"
-              label={t.destination}
-              {language}
-              destination
-              bind:value={destinationText}
-              bind:selected={destination}
-            />
-          {/if}
-        </div>
+<section
+  class="timetable-panel panel"
+  aria-labelledby="search-title"
+  hidden={page !== "search"}
+>
+  <h1 id="search-title">{t.search}</h1>
+  <form onsubmit={search} aria-busy={loading}>
+    <fieldset class="timetable-modes">
+      <legend class="sr-only">{t.timetables}</legend>
+      <label>
+        <input
+          type="radio"
+          name="timetable-mode"
+          value="connections"
+          bind:group={mode}
+        />
+        <Icon name="bus" size={19} />
+        <span>{t.connections}</span>
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="timetable-mode"
+          value="departureBoard"
+          bind:group={mode}
+          aria-label={t.departureBoard}
+        />
+        <Icon name="clock" size={19} />
+        <span>{t.departuresLabel}</span>
+      </label>
+    </fieldset>
+    <div class="route-fields">
+      <div class="route-stops">
+        <StopField
+          id="origin-stop"
+          label={t.origin}
+          {language}
+          bind:value={originText}
+          bind:selected={origin}
+        />
         {#if mode === "connections"}
-          <button
-            type="button"
-            class="swap-stops"
-            aria-label={t.swapStops}
-            title={t.swapStops}
-            onclick={swap}
-          >
-            <Icon name="swap" size={20} />
-          </button>
+          <StopField
+            id="destination-stop"
+            label={t.destination}
+            {language}
+            destination
+            bind:value={destinationText}
+            bind:selected={destination}
+          />
         {/if}
       </div>
-      <div class="timetable-options">
-        <label for="journey-date"
-          >{t.date}<input
-            id="journey-date"
-            type="date"
-            bind:value={date}
-            required
-          /></label
+      {#if mode === "connections"}
+        <button
+          type="button"
+          class="swap-stops"
+          aria-label={t.swapStops}
+          title={t.swapStops}
+          onclick={swap}
         >
-        <label for="journey-time"
-          >{t.time}<input
-            id="journey-time"
-            type="time"
-            bind:value={time}
-            required
-          /></label
-        >
-        {#if mode === "connections"}
-          <label for="time-direction"
-            >{t.searchTime}<select id="time-direction" bind:value={arriveBy}
-              ><option value={false}>{t.departure}</option><option value={true}
-                >{t.arrival}</option
-              ></select
-            ></label
-          >
-        {/if}
-        <label for="transport-filter"
-          >{t.transport}<select id="transport-filter" bind:value={transport}
-            ><option value="all">{t.allTransport}</option><option value="bus"
-              >{t.bus}</option
-            ><option value="train">{t.train}</option><option value="urban"
-              >{t.urban}</option
+          <Icon name="swap" size={20} />
+        </button>
+      {/if}
+    </div>
+    <div class="timetable-options">
+      <label for="journey-date"
+        >{t.date}<input
+          id="journey-date"
+          type="date"
+          bind:value={date}
+          required
+        /></label
+      >
+      <label for="journey-time"
+        >{t.time}<input
+          id="journey-time"
+          type="time"
+          bind:value={time}
+          required
+        /></label
+      >
+      {#if mode === "connections"}
+        <label for="time-direction"
+          >{t.searchTime}<select id="time-direction" bind:value={arriveBy}
+            ><option value={false}>{t.departure}</option><option value={true}
+              >{t.arrival}</option
             ></select
           ></label
         >
-      </div>
-      <div class="timetable-preferences">
-        {#if mode === "connections"}
-          <label class="direct-option">
-            <input type="checkbox" bind:checked={directOnly} />
-            <span>{t.directOnly}</span>
-          </label>
-        {/if}
-        <details class="time-occurrence">
-          <summary>{t.repeatedHour}<Icon name="chevron" size={14} /></summary>
-          <p class="muted">{t.repeatedHourHint}</p>
-          <label for="time-occurrence"
-            >{t.timeOccurrence}<select
-              id="time-occurrence"
-              bind:value={timeOccurrence}
-              ><option value="earlier">{t.firstOccurrence}</option><option
-                value="later">{t.secondOccurrence}</option
-              ></select
-            ></label
-          >
-        </details>
-      </div>
-      <div class="search-actions">
-        <button
-          class="primary"
-          type="submit"
-          disabled={!native}
-          aria-describedby={native ? undefined : "timetable-preview"}
-        >
-          <Icon name="search" size={20} />
-          {mode === "connections" ? t.searchConnections : t.departureBoard}
-        </button>
-        {#if loading}<button class="secondary" type="button" onclick={cancel}
-            >{t.cancel}</button
-          >{/if}
-      </div>
-      <p class="muted timetable-zone">{t.timetableZone}</p>
-      {#if !native}
-        <p class="preview-notice" id="timetable-preview">
-          <Icon name="info" size={17} />
-          <span>{t.browserPreview}</span>
-        </p>
       {/if}
-      <p class="muted search-status" role="status">
-        {#if loading}{t.searchInProgress}{:else if error}{t[error]}{/if}
+      <label for="transport-filter"
+        >{t.transport}<select id="transport-filter" bind:value={transport}
+          ><option value="all">{t.allTransport}</option><option value="bus"
+            >{t.bus}</option
+          ><option value="train">{t.train}</option><option value="urban"
+            >{t.urban}</option
+          ></select
+        ></label
+      >
+    </div>
+    <div class="timetable-preferences">
+      {#if mode === "connections"}
+        <label class="direct-option">
+          <input type="checkbox" bind:checked={directOnly} />
+          <span>{t.directOnly}</span>
+        </label>
+      {/if}
+      <details class="time-occurrence">
+        <summary>{t.repeatedHour}<Icon name="chevron" size={14} /></summary>
+        <p class="muted">{t.repeatedHourHint}</p>
+        <label for="time-occurrence"
+          >{t.timeOccurrence}<select
+            id="time-occurrence"
+            bind:value={timeOccurrence}
+            ><option value="earlier">{t.firstOccurrence}</option><option
+              value="later">{t.secondOccurrence}</option
+            ></select
+          ></label
+        >
+      </details>
+    </div>
+    <div class="search-actions">
+      <button
+        class="primary"
+        type="submit"
+        disabled={!native}
+        aria-describedby={native ? undefined : "timetable-preview"}
+      >
+        <Icon name="search" size={20} />
+        {mode === "connections" ? t.searchConnections : t.departureBoard}
+      </button>
+      {#if loading}<button class="secondary" type="button" onclick={cancel}
+          >{t.cancel}</button
+        >{/if}
+    </div>
+    <p class="muted timetable-zone">{t.timetableZone}</p>
+    {#if !native}
+      <p class="preview-notice" id="timetable-preview">
+        <Icon name="info" size={17} />
+        <span>{t.browserPreview}</span>
       </p>
-    </form>
+    {/if}
+    <p class="muted search-status" role="status">
+      {#if loading}{t.searchInProgress}{:else if error}{t[error]}{/if}
+    </p>
+  </form>
+</section>
+
+<section
+  class="timetable-panel timetable-results panel"
+  aria-labelledby={detailOpen ? "detail-title" : "results-title"}
+  hidden={page !== "journeys"}
+>
+  <div hidden={detailOpen}>
+    <h1 id="results-title" tabindex="-1" bind:this={resultsHeading}>
+      {t.journeys}
+    </h1>
     {#if journeys !== null || departures !== null}
-      <section class="timetable-results" aria-labelledby="results-title">
-        <h2 id="results-title" tabindex="-1" bind:this={resultsHeading}>
-          {t.results}
-        </h2>
-        <p class="result-route">
-          {resultOrigin}{#if resultMode === "connections"}
-            → {resultDestination}{/if}
-        </p>
-        <p class="muted">{t.scheduled}</p>
-        {#if journeys?.length === 0}<p role="status">{t.noConnections}</p>{/if}
-        {#if departures?.length === 0}<p role="status">{t.noDepartures}</p>{/if}
-        {#if journeys?.length}
-          <ul class="journey-results">
-            {#each journeys as journey (journey.id)}
-              <li>
-                <button
-                  class="journey-result"
-                  type="button"
-                  onclick={(event) =>
-                    void openDetail(journey, null, event.currentTarget)}
+      <p class="result-route">
+        {resultOrigin}{#if resultMode === "connections"}
+          → {resultDestination}{/if}
+      </p>
+      <p class="muted">{t.scheduled}</p>
+      {#if journeys?.length === 0}<p role="status">{t.noConnections}</p>{/if}
+      {#if departures?.length === 0}<p role="status">{t.noDepartures}</p>{/if}
+      {#if journeys?.length}
+        <ul class="journey-results">
+          {#each journeys as journey (journey.id)}
+            <li>
+              <button
+                class="journey-result"
+                type="button"
+                onclick={(event) =>
+                  void openDetail(journey, null, event.currentTarget)}
+              >
+                <strong class="journey-times"
+                  ><span>{displayTime(journey.departure)}</span><span
+                    aria-hidden="true"
+                  >
+                    →
+                  </span><span>{displayTime(journey.arrival)}</span></strong
                 >
-                  <strong class="journey-times"
-                    ><span>{displayTime(journey.departure)}</span><span
-                      aria-hidden="true"
-                    >
-                      →
-                    </span><span>{displayTime(journey.arrival)}</span></strong
-                  >
-                  <span
-                    >{displayDate(
-                      journey.departure,
-                    )}{#if displayDate(journey.departure) !== displayDate(journey.arrival)}
-                      → {displayDate(journey.arrival)}{/if}</span
-                  >
-                  <span
-                    >{t.duration}: {journey.durationMinutes}
-                    {t.minutes} · {t.transfers}: {journey.transfers}</span
-                  >
-                  {#each journey.legs as leg}<span
-                      >{#if leg.service}{leg.service.line}
-                        {leg.service.name} · {leg.service
-                          .operator}{:else}{t.walking}{/if}</span
-                    >{/each}
-                  <span class="detail-link">{t.showDetails} →</span>
-                </button>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-        {#if departures?.length}
-          <ul class="journey-results">
-            {#each departures as item (item.id)}
-              <li>
-                <button
-                  class="journey-result"
-                  type="button"
-                  onclick={(event) =>
-                    void openDetail(null, item, event.currentTarget)}
+                <span
+                  >{displayDate(
+                    journey.departure,
+                  )}{#if displayDate(journey.departure) !== displayDate(journey.arrival)}
+                    → {displayDate(journey.arrival)}{/if}</span
                 >
-                  <strong class="journey-times"
-                    >{displayTime(item.departure)} · {item.service.line}
-                    {item.service.name}</strong
-                  >
-                  <span
-                    >{displayDate(item.departure)} · {item.service
-                      .destination}</span
-                  ><span>{item.stop.name} · {item.service.operator}</span>
-                  {#if item.platform}<span>{t.platform}: {item.platform}</span
-                    >{/if}
-                  {#if item.service.cancelled}<span>{t.serviceCancelled}</span
-                    >{/if}
-                  <span class="detail-link">{t.showDetails} →</span>
-                </button>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </section>
+                <span
+                  >{t.duration}: {journey.durationMinutes}
+                  {t.minutes} · {t.transfers}: {journey.transfers}</span
+                >
+                {#each journey.legs as leg}<span
+                    >{#if leg.service}{leg.service.line}
+                      {leg.service.name} · {leg.service
+                        .operator}{:else}{t.walking}{/if}</span
+                  >{/each}
+                <span class="detail-link">{t.showDetails} →</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+      {#if departures?.length}
+        <ul class="journey-results">
+          {#each departures as item (item.id)}
+            <li>
+              <button
+                class="journey-result"
+                type="button"
+                onclick={(event) =>
+                  void openDetail(null, item, event.currentTarget)}
+              >
+                <strong class="journey-times"
+                  >{displayTime(item.departure)} · {item.service.line}
+                  {item.service.name}</strong
+                >
+                <span
+                  >{displayDate(item.departure)} · {item.service
+                    .destination}</span
+                ><span>{item.stop.name} · {item.service.operator}</span>
+                {#if item.platform}<span>{t.platform}: {item.platform}</span
+                  >{/if}
+                {#if item.service.cancelled}<span>{t.serviceCancelled}</span
+                  >{/if}
+                <span class="detail-link">{t.showDetails} →</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    {:else if page === "journeys"}
+      <p class="muted" role="status">
+        {loading ? t.searchInProgress : error ? t[error] : t.journeysEmpty}
+      </p>
     {/if}
   </div>
   {#if detailOpen}
@@ -435,7 +466,9 @@
       type="button"
       onclick={() => void back()}>← {t.backToResults}</button
     >
-    <h2 tabindex="-1" bind:this={detailHeading}>{t.journeyDetail}</h2>
+    <h1 id="detail-title" tabindex="-1" bind:this={detailHeading}>
+      {t.journeyDetail}
+    </h1>
     <p class="muted">{t.scheduled}</p>
     {#if detailError}<p class="message" role="status">{t[detailError]}</p>{/if}
     {#if selectedJourney}

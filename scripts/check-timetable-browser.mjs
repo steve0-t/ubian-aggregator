@@ -10,7 +10,11 @@ const browser = await chromium.launch({
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
 });
 try {
-  const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
+  const page = await browser.newPage({
+    viewport: { width: 360, height: 800 },
+    hasTouch: true,
+    isMobile: true,
+  });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.addInitScript(() => {
@@ -110,6 +114,55 @@ try {
   await page.goto(process.env.UBIAN_UI_URL ?? "http://127.0.0.1:1422", {
     waitUntil: "domcontentloaded",
   });
+  const nav = page.locator(".mobile-navigation");
+  const searchTab = nav.getByRole("button", {
+    name: "Vyhľadávanie",
+    exact: true,
+  });
+  const journeysTab = nav.getByRole("button", { name: "Cesty", exact: true });
+  const swipe = await page.context().newCDPSession(page);
+  async function swipeFromTo(from, to) {
+    await swipe.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [from],
+    });
+    for (const step of [0.5, 1]) {
+      await swipe.send("Input.dispatchTouchEvent", {
+        type: "touchMove",
+        touchPoints: [
+          {
+            x: from.x + (to.x - from.x) * step,
+            y: from.y + (to.y - from.y) * step,
+          },
+        ],
+      });
+    }
+    await swipe.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+  }
+  await page.locator("#search-title:visible").waitFor();
+  assert.equal(await searchTab.getAttribute("aria-current"), "page");
+  assert.equal(
+    await page
+      .locator("main")
+      .getByRole("button", { name: "Účet Ubian", exact: true })
+      .count(),
+    0,
+  );
+  await swipeFromTo({ x: 320, y: 110 }, { x: 95, y: 110 });
+  await page.locator("#results-title:visible").waitFor();
+  assert.equal(await journeysTab.getAttribute("aria-current"), "page");
+  await page
+    .getByText("Vyhľadajte spojenie alebo odchody a výsledky sa zobrazia tu.")
+    .waitFor();
+  await swipeFromTo({ x: 95, y: 110 }, { x: 320, y: 110 });
+  await page.locator("#search-title:visible").waitFor();
+  await swipeFromTo({ x: 315, y: 590 }, { x: 305, y: 285 });
+  await page.waitForFunction(() => window.scrollY > 0);
+  assert.equal(await searchTab.getAttribute("aria-current"), "page");
+
   const search = page.getByRole("button", {
     name: "Vyhľadať spojenie",
     exact: true,
@@ -129,6 +182,8 @@ try {
   await search.click();
   const result = page.locator(".journey-result");
   await result.waitFor();
+  assert.equal(await journeysTab.getAttribute("aria-current"), "page");
+  assert.equal(await search.isVisible(), false);
   assert.equal(
     await page.locator("#results-title").evaluate((heading) => {
       const rect = heading.getBoundingClientRect();
@@ -177,6 +232,15 @@ try {
   await page.locator(".journey-legs").waitFor();
   await page.goBack();
   await result.waitFor();
+  // Leaving a detail view by swiping returns to the form and preserves its results.
+  await result.click();
+  await page.locator(".journey-legs").waitFor();
+  await swipeFromTo({ x: 245, y: 140 }, { x: 340, y: 140 });
+  await page.locator("#search-title:visible").waitFor();
+  assert.equal(await origin.inputValue(), "Dvorianky, č.d.143");
+  await journeysTab.click();
+  await result.waitFor();
+  await searchTab.click();
   // Editing a resolved name invalidates its provider ID, even if edited back.
   await origin.fill("Dvorianky, č.d.143 ");
   await search.click();
@@ -239,6 +303,7 @@ try {
   });
   await page.waitForTimeout(50);
   assert.match(await result.innerText(), /TEST-073104/);
+  await searchTab.click();
   await page.evaluate(() => {
     window.__timetableTest.searchMode = "offline";
   });
@@ -253,12 +318,15 @@ try {
   await page
     .getByText("Pre toto vyhľadávanie neboli vrátené žiadne spojenia.")
     .waitFor();
+  assert.equal(await journeysTab.getAttribute("aria-current"), "page");
+  await searchTab.click();
   await page.getByLabel("Odchody zo zastávky", { exact: true }).check();
   await page
     .getByRole("button", { name: "Odchody zo zastávky", exact: true })
     .click();
   await result.waitFor();
   assert.match(await result.innerText(), /06:44/);
+  assert.equal(await journeysTab.getAttribute("aria-current"), "page");
   assert.ok(
     await page.evaluate(() =>
       window.__timetableTest.calls.some(
@@ -268,6 +336,7 @@ try {
     ),
   );
   // External swap invalidates an old autocomplete and fences its completion.
+  await searchTab.click();
   await page.getByLabel("Spojenia", { exact: true }).check();
   await page.evaluate(() => {
     window.__timetableTest.lookupMode = "pending";
@@ -311,7 +380,7 @@ try {
   );
   assert.deepEqual(errors, []);
   console.log(
-    "Timetable UI: stop selection/edit/swap, native query DTOs, detail/date limitation, button/browser Back with scroll, cancellation/late completions, supersession, offline/empty results, departure board and no persisted journey history passed using test-only IPC responses.",
+    "Timetable UI: Search and Journeys navigation, touch swipes, stop selection/edit/swap, native query DTOs, detail/date limitation, button/browser Back with scroll, cancellation/late completions, supersession, offline/empty results, departure board and no persisted journey history passed using test-only IPC responses.",
   );
 } finally {
   await browser.close();

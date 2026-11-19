@@ -488,7 +488,9 @@ try {
     assert.equal(stored.includes(secret), false);
   await page.evaluate(() => localStorage.removeItem("cestou.preferences.v1"));
   await page.reload();
-  await page.locator(".timetable-panel").waitFor();
+  await page
+    .getByRole("heading", { name: "Vyhľadávanie", exact: true })
+    .waitFor();
   assert.equal(await page.locator("html").getAttribute("data-theme"), "black");
   await openAccount();
   assert.match(await account.innerText(), /Nie ste prihlásení/);
