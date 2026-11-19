@@ -157,9 +157,6 @@ const sk = {
     "Poskytovateľ vrátil detail pre iný dátum. Zastávky tohto detailu sa nezobrazujú; úseky vyhľadaného spojenia zostávajú dostupné.",
   invalidTime:
     "Zadajte platný dátum a čas. Pri zmene letného času vyberte jednoznačný čas.",
-  onlineTimetable: "Online cestovné poriadky Ubian",
-  onlineHint:
-    "Verejné cestovné poriadky bez prihlásenia. Požiadavky sa odosielajú do Ubian.",
   serviceCancelled: "Spoj je zrušený",
   chooseOrigin: "Vyberte zastávku odchodu.",
   chooseBothStops: "Vyberte obe zastávky zo zoznamu.",
@@ -392,9 +389,6 @@ const en: Messages = {
     "The provider returned detail for a different date. Its stops are hidden; the searched journey legs remain available.",
   invalidTime:
     "Enter a valid date and time. At a daylight saving transition, choose an unambiguous time.",
-  onlineTimetable: "Online Ubian timetables",
-  onlineHint:
-    "Public timetables without signing in. Requests are sent to Ubian.",
   serviceCancelled: "Service cancelled",
   chooseOrigin: "Choose a departure stop.",
   chooseBothStops: "Choose both stops from the list.",
@@ -629,9 +623,6 @@ const uk: Messages = {
     "Постачальник повернув відомості за іншу дату. Їхні зупинки приховано; ділянки знайденого сполучення залишаються доступними.",
   invalidTime:
     "Введіть дійсні дату й час. Під час переходу на літній час виберіть однозначний час.",
-  onlineTimetable: "Онлайн-розклади Ubian",
-  onlineHint:
-    "Загальнодоступні розклади без входу. Запити надсилаються до Ubian.",
   serviceCancelled: "Рейс скасовано",
   chooseOrigin: "Виберіть зупинку відправлення.",
   chooseBothStops: "Виберіть обидві зупинки зі списку.",

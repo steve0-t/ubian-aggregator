@@ -19,13 +19,17 @@
     openProvider,
     platformStatus,
     probeKeystore,
+    saveDeviceTheme,
     setSystemAppearance,
     type Destination,
     type PlatformStatus,
     type ProbeReport,
   } from "./lib/api/platform";
 
-  let { initialPreferences }: { initialPreferences: Preferences } = $props();
+  let {
+    initialPreferences,
+    initialThemeSaved,
+  }: { initialPreferences: Preferences; initialThemeSaved: boolean } = $props();
   const startingPreferences = untrack(() => initialPreferences);
 
   type Tab = "journeys" | "account" | "settings";
@@ -45,7 +49,9 @@
   let theme = $state<Theme>(startingPreferences.theme);
   let accent = $state(startingPreferences.accent);
   let accentInput = $state(startingPreferences.accent.toUpperCase());
-  let preferencesSaved = $state(true);
+  let browserPreferencesSaved = $state(true);
+  let deviceThemeSaved = $state(untrack(() => initialThemeSaved));
+  let themeSave = Promise.resolve(true);
   let systemAppearanceFailed = $state(false);
   let tab = $state<Tab>("journeys");
   let busy = $state(false);
@@ -55,6 +61,9 @@
   let status = $state<PlatformStatus | null>(null);
   let probe = $state<ProbeReport | null>(null);
   const native = isNative();
+  const preferencesSaved = $derived(
+    browserPreferencesSaved && deviceThemeSaved,
+  );
   const t = $derived(messages[language]);
   const invalidAccent = $derived(!isAccent(accentInput));
   const canOpen = $derived(
@@ -68,7 +77,7 @@
     const preferences = { language, theme, accent };
     document.documentElement.lang = language;
     applyAppearance(preferences);
-    preferencesSaved = savePreferences(preferences);
+    browserPreferencesSaved = savePreferences(preferences);
   });
 
   function selectTab(next: Tab) {
@@ -88,8 +97,23 @@
     if (isAccent(value)) accent = value.toLowerCase();
   }
 
+  async function selectTheme(next: Theme) {
+    if (theme === next && deviceThemeSaved) return;
+    theme = next;
+    if (!native) return;
+    const save = themeSave
+      .then(() => saveDeviceTheme(next))
+      .then(
+        () => true,
+        () => false,
+      );
+    themeSave = save;
+    const saved = await save;
+    if (themeSave === save) deviceThemeSaved = saved;
+  }
+
   function resetAppearance() {
-    theme = "system";
+    void selectTheme("system");
     selectAccent(DEFAULT_ACCENT);
   }
 
@@ -271,21 +295,7 @@
         {/if}
 
         {#if tab === "journeys"}
-          <div class="journeys-hero">
-            <div class="journeys-intro">
-              <h1>{t.onlineTimetable}</h1>
-              <p>{t.onlineHint}</p>
-            </div>
-            <div class="transit-art" aria-hidden="true">
-              <span class="transit-track track-main"></span>
-              <span class="transit-track track-branch"></span>
-              <span class="transit-track track-cross"></span>
-              <span class="transit-station station-first"></span>
-              <span class="transit-station station-transfer"></span>
-              <span class="transit-station station-last"></span>
-            </div>
-          </div>
-
+          <h1 class="sr-only">{t.timetables}</h1>
           <div class="journeys-grid">
             <Timetables {language} />
 
@@ -364,7 +374,8 @@
                       type="radio"
                       name="theme"
                       value={option.id}
-                      bind:group={theme}
+                      checked={theme === option.id}
+                      onchange={() => void selectTheme(option.id)}
                     />
                     <span
                       class="theme-thumbnail"

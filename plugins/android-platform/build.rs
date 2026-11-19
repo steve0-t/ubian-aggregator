@@ -19,6 +19,8 @@ fn main() {
         "account_protection",
         "vault_status",
         "set_appearance",
+        "load_theme",
+        "save_theme",
     ])
     .android_path("android")
     .build();

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 mod account;
+mod preferences;
 #[cfg(target_os = "android")]
 use tauri::plugin::PluginHandle;
 use tauri::{
@@ -319,7 +320,9 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             account::account_unlock_session,
             account::account_protection,
             vault_status,
-            set_appearance
+            set_appearance,
+            preferences::load_theme,
+            preferences::save_theme
         ])
         .setup(|app, api| {
             app.manage(TimetableClient::new()?);

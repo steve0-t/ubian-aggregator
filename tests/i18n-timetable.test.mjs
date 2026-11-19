@@ -19,7 +19,6 @@ test("all three dictionaries have complete, nonempty messages", () => {
     assert.deepEqual(Object.keys(dictionary).sort(), keys);
     for (const text of Object.values(dictionary)) assert.ok(text.trim().length);
   }
-  assert.match(messages.uk.onlineTimetable, /Ubian/);
   assert.match(messages.uk.providerLanguage, /словацька/);
 });
 

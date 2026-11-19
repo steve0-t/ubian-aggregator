@@ -66,8 +66,11 @@ try {
                 lastError: null,
               };
             case "set_appearance":
+            case "save_theme":
             case "cancel_request":
               return;
+            case "load_theme":
+              return null;
             case "lookup_stops":
               if (state.lookupMode === "pending")
                 return new Promise((resolve) => {
@@ -126,6 +129,18 @@ try {
   await search.click();
   const result = page.locator(".journey-result");
   await result.waitFor();
+  assert.equal(
+    await page.locator("#results-title").evaluate((heading) => {
+      const rect = heading.getBoundingClientRect();
+      return (
+        document.activeElement === heading &&
+        rect.top >= 0 &&
+        rect.bottom <= window.innerHeight
+      );
+    }),
+    true,
+    "the results heading is focused and visible immediately",
+  );
   const submitted = await page.evaluate(
     () =>
       window.__timetableTest.calls.find(
